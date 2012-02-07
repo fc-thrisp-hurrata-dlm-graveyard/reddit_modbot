@@ -4,10 +4,12 @@ require 'hashie'
 require 'json'
 require 'log4r'
 
-requires = ['model_logging', 'models', 'reddit_wrap', ]
+requires = ['reddit_wrap', './models/model_logging' ]
 requires.each do |r|
   require File.join(File.dirname(__FILE__), (r + '.rb') )
 end
+
+Dir['./models/*.rb'].each{ |f| require f }
 
 DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/rrbot.sqlite")
 DataMapper.auto_upgrade!

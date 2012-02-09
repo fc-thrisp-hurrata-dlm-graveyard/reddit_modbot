@@ -1,6 +1,4 @@
 source "http://rubygems.org"
-gem "mechanize"
-gem "data_mapper"
-gem "dm-sqlite-adapter"
-gem "json"
-gem "log4r"
+
+# Specify your gem's dependencies in modbot.gemspec
+gemspec

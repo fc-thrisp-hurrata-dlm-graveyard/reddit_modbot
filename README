@@ -39,16 +39,15 @@ Conditions:
 
 TODO:
 
+  everything is sort of bits and pieces atm 
+
   tests and testing
 
-  rate limit agent to once per second
+  rate limit agent to once per second (or more even)
 
-  read everything from a config file
+  #read everything from a config file sort of implemented
+   #intialialize from config file (via passed param of where) or pass into class instance
 
-  intialialize from config file (via passed param of where) or pass into class instance
-
-  get conditions working and exact
+  #get conditions working and exact
 
   #future: modularize wrappers, to say use a modbot for a specific api, decouple from reddit and allow numerous moderation types
-
-  

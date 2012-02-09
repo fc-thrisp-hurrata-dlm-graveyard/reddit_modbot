@@ -119,9 +119,9 @@ module RedditWrap
     z
   end
 
-  def user_age_to_readable(from_when)
-    user_age(from_when).to_s + " days"
-  end
+  #def user_age_to_readable(from_when)
+  #  user_age(from_when).to_s + " days"
+  #end
 
   def user_age(from_when)
     (((( ( Time.at(Time.now) - Time.at(from_when) )/ 60 )/ 60)/ 24).to_i)

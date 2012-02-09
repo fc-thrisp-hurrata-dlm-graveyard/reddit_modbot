@@ -1,10 +1,12 @@
 require "modbot/version"
 require "modbot/reddit_wrap"
+require "modbot/modbot_utilities"
 
 module Modbot
 
   class ModBot
     include RedditWrap
+    #include ModbotUtilities
 
     attr_accessor :moderator, :subreddits, :conditions
 
@@ -221,5 +223,5 @@ module Modbot
     #end
 
   end
-  #x = ModBot.new({:name=>'ren_wigginton', :password => '|nohonor|'}, [["transgender", 5, 5, 10]], [])
+
 end

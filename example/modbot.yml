@@ -1,0 +1,18 @@
+moderator:
+  name: name
+  pass: password
+
+subreddits:
+  - [xxxxx, 10, 10, 10]
+  - [yyyyy, 10, 10, 10]
+
+conditions:
+  - [comment, author, contains, "none", remove]  
+  - [comment, body, contains, "none", remove]
+  - [comment, min_comment_karma, is_less_than, 100, remove]
+  - [submitted_link, author, contains, "no", remove]
+  - [submitted_link, title, contains, "no", remove]
+  - [submitted_link, url, contains, "no", remove]
+  - [submitted_link, min_comment_karma, is_less_than, 100, remove]
+  - [submitted_link, min_account_age, is_greater_than, 365, remove]
+  - [submitted_link, author, is, "nothing", remove]

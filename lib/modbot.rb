@@ -10,17 +10,19 @@ module Modbot
 
     attr_accessor :moderator, :subreddits, :conditions
 
-    def initialize(config, moderator = {},subreddits = [], conditions = [])
+    def initialize(config = :pass_param, moderator = {},subreddits = [], conditions = [])
       @r = Mechanize.new{ |agent| agent.user_agent_alias = 'Mac Safari' }
-      if config == "pass_param"
+      @r.pre_connect_hooks << Proc.new { sleep 1 }
+      #good for one, but what happens with a number of instances making requests?
+      #each unit would comprise a separate enitity, so as long as each plays by the api rules, then ok(ish)
+      if config == :pass_param
         @m_modrname = moderator['name']
         @m_password = moderator['pass']
         @subreddits = subreddits
         @conditions = conditions
-      elsif config == "config_file"
+      elsif config == :config_file
         mbc = YAML::load(File.open("modbot.yml")) #how to find root and where should this be or path specification        
-        @m_modrname = mbc['moderator']['name']
-        @m_password = mbc['moderator']['pass']
+        @m_modrname, @m_password = mbc['moderator']['name'], mbc['moderator']['pass']
         @subreddits = mbc['subreddits']
         @conditions = mbc['conditions']
       end
@@ -39,9 +41,19 @@ module Modbot
     def m_password
       @m_password
     end
+ 
+    def m_uh
+      @uh
+    end
+
+    #def m_pack
+    #  [@m_modrname, @m_password, @uh]
+    #end
 
     def login_moderator
-      self.login(m_modrname,m_password) 
+      self.login(m_modrname,m_password)
+      x = self.get_current_user(m_modrname)
+      @uh = x.uh
     end
 
     def current_subreddits
@@ -91,52 +103,34 @@ module Modbot
     def perform_alert(item)
     end
 
+    #reports, spam, and submissions might be abstracted to one function instead of repeating 3 similar
     #Checks reported items for any matching conditions.
-    def check_reports(subreddit)
-      reports = get_reddit_reports(subreddit)
-      check_alerts(subreddit, "report", reports.count)
-      reports.each do |i|
-        check_conditions(i)  
+    #report, spam, or submission
+    #results_fetch 
+    def results_fetch(which_q, subreddit, limit)
+      which_to = self.method( ('get_reddit_' + which_q + 's'), limit)
+      results = which_to.call(subreddit.name)
+      if results == ["Nothing!"]
+        #log nothing to report
+      else 
+        check_alerts( (which_q + '_limit').to_sym, results.count, subreddit)
+        results.each do |i|
+          check_conditions(i)  
+        end
+        #log end conditions check
       end
-    end
-
-    #Checks new items on the /about/spam page for any matching conditions.
-    def check_new_spam(subreddit, conditions)
-      #compare time of first instance to recorded time of last check 
-      #spams = get_reddit_spams(subreddit)
-      #check_report_alerts(subreddit, "spam", spams.count)
-      #spams.each do |sp|
-      #  check_conditions(conditions, sp)
-      #end
     end
 
     #Checks for items with more reports than the subreddit's threshold.
-    def check_alerts(subreddit, alert, count)
-      case alert
-      when "report"
-        if subreddit.report_limit <= count
-          self.perform_alert()
-        end
-      when "spam"
-        if subreddit.spam_limit <= count
-          self.perform_alert()
-        end
-      when "submissions"
-        if subreddit.submission_limit <= count
-          self.perform_alert()
-        end
-      else
+    def check_alerts(alert, count, subreddit)
+      which_to = subreddit.method(alert)
+      if which_to.call <= count
+        self.perform_alert()
+        #log alert
       end
     end
 
-    #Checks new items on the /new page for any matching conditions.
-    #def check_new_submissions(name)
-    #end
-
     #Checks an item against a set of conditions.
-    #Returns True if a condition matches, or False if none match.
-    #action_types restricts checked conditions to particular action(s).
-    #Setting perform to False will check, but not actually perform if matched.
     def check_conditions(item)
       conditions = current_conditions_bysubject(item.subject)
       conditions.each do |c| #unless conditions.empty? 
@@ -144,8 +138,7 @@ module Modbot
       end
     end
 
-    #Checks an item against a single condition (and sub-conditions).
-    #Returns the condition's ID if it matches.
+    #Checks an item against a single condition.
     def check_condition(condition, item)
       case condition.attribute
       when :author
@@ -178,6 +171,7 @@ module Modbot
     #log_action(condition, item)
     end
   
+    #tests an item against a condition, returns true or false
     def test_condition(test_item, condition)
       case condition.query 
       when :matches
@@ -203,19 +197,21 @@ module Modbot
       end
     end
 
-    def perform_regular
+    #
+    #def perform_regular
+      #make a config item 
       #puts "check reports"
       #puts "check spam"
       #puts "check new submissions"
-      belch_out_agent
-    end
+    #  belch_out_agent
+    #end
 
     def timestamps_top 
       @timestamps
     end
 
     #see if time has changed on newest item
-    #def compare_time(for_what, for_when)
+    #def compare_timestamps(for_what, for_when)
     #  if @timestamps.send(for_what).nil?
     #    #top time stamp is now
     #  elsif

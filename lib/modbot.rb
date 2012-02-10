@@ -106,10 +106,10 @@ module Modbot
     #reports, spam, and submissions might be abstracted to one function instead of repeating 3 similar
     #Checks reported items for any matching conditions.
     #report, spam, or submission
-    #results_fetch 
+    #def results_fetch(subreddit, limit symbol) then pull that apart.... :spam_limit >>>> spam
     def results_fetch(which_q, subreddit, limit)
-      which_to = self.method( ('get_reddit_' + which_q + 's'), limit)
-      results = which_to.call(subreddit.name)
+      which_to = self.method('get_reddit_' + which_q + 's')
+      results = which_to.call(subreddit.name, limit)
       if results == ["Nothing!"]
         #log nothing to report
       else 

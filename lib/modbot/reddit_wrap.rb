@@ -1,13 +1,13 @@
+#ad hoc reddit api wrapper
 require 'json'
 module RedditWrap
-#ad hoc reddit api wrapper
 
-#something more extensive to pull up all routes needed from simple cues
-#reddit_route('reports'
-#def reddit_route(route)
-#end
+  #something more extensive to pull up all routes needed from simple cues
+  #reddit_route('reports'
+  #def reddit_route(route)
+  #end
 
-#http://www.reddit.com/user/#{USER_NAME}/about/.json
+  #http://www.reddit.com/user/#{USER_NAME}/about/.json
   def get_current_user(user)
     h = Hashie::Mash.new
     x = @r.get 'http://www.reddit.com/user/' + user + '/about/.json'
@@ -17,7 +17,7 @@ module RedditWrap
     h 
   end
 
-#https://ssl.reddit.com/api/login/
+  #https://ssl.reddit.com/api/login/
   def login(user,password)
     begin
       @r.post 'https://ssl.reddit.com/api/login/' + user, 
@@ -29,28 +29,28 @@ module RedditWrap
     end
   end
 
-#http://www.reddit.com/r/#{SUBREDDIT}/new.json
-  def get_reddit_submissions(reddit_name, limit = 20)
+  #http://www.reddit.com/r/#{SUBREDDIT}/new.json
+  def get_reddit_submissions(reddit_name, limit = 50)
     route = 'http://www.reddit.com/r/' + reddit_name + '/new.json'
     q_parse(route, limit)
   end
 
-#http://www.reddit.com/r/#{SUBREDDIT}/about/reports/.json
-  def get_reddit_reports(reddit_name, limit = 20)
+  #http://www.reddit.com/r/#{SUBREDDIT}/about/reports/.json
+  def get_reddit_reports(reddit_name, limit = 25)
     route = 'http://www.reddit.com/r/' + reddit_name + '/about/reports/.json'
     q_parse(route, limit)
   end
 
-#http://www.reddit.com/r/#{SUBREDDIT}/about/spam/.json
-  def get_reddit_spams(reddit_name, limit = 20)
+  #http://www.reddit.com/r/#{SUBREDDIT}/about/spam/.json
+  def get_reddit_spams(reddit_name, limit = 50)
     route = 'http://www.reddit.com/r/'+ reddit_name + '/about/spam/.json'
     q_parse(route, limit)
   end
 
-#http://www.reddit.com/message/moderator/.json
-#moderator messages for moderator
+  #http://www.reddit.com/message/moderator/.json
+  #send message to subreddit moderators
 
-#http://www.reddit.com/user/#{USER_NAME}/about/.json
+  #http://www.reddit.com/user/#{USER_NAME}/about/.json
   def reddit_user(name)
     x = @r.get 'http://www.reddit.com/user/' + name + '/about.json'
     x = JSON.parse(x.body)
@@ -64,23 +64,23 @@ module RedditWrap
     y
   end
 
-#http://www.reddit.com/api/approve
+  #http://www.reddit.com/api/approve
   def approve(id)
     @r.post 'http://www.reddit.com/api/approve', 
-          'id' => id , 
-          'uh' => @uh,
-          'api_type' => 'json'
+            'id' => id , 
+            'uh' => @uh,
+            'api_type' => 'json'
   end
 
-#http://www.reddit.com/remove
+  #http://www.reddit.com/remove
   def remove(id)
     @r.post 'http://www.reddit.com/api/remove', 
-          'id' => id , 
-          'uh' => @uh,
-          'api_type' => 'json'
+            'id' => id , 
+            'uh' => @uh,
+            'api_type' => 'json'
   end
 
-#misc utility methods
+  #misc utility methods
   def q_parse(route, limit)
     if limit == "none" 
       x = @r.get route
@@ -115,10 +115,6 @@ module RedditWrap
     end
     z
   end
-
-  #def user_age_to_readable(from_when)
-  #  user_age(from_when).to_s + " days"
-  #end
 
   def user_age(from_when)
     (((( ( Time.at(Time.now) - Time.at(from_when) )/ 60 )/ 60)/ 24).to_i)

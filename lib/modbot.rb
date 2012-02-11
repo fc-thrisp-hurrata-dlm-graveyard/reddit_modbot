@@ -13,7 +13,7 @@ module Modbot
     def initialize(config = :pass_param, moderator = {},subreddits = [], conditions = [])
       @l = Logger.new(STDOUT)
       @r = Mechanize.new{ |agent| agent.user_agent_alias = 'Mac Safari' }
-      @r.pre_connect_hooks << Proc.new { sleep 2 }#s
+      @r.post_connect_hooks << Proc.new { sleep 2 }#s
       if config == :pass_param
         @m_modrname = moderator['name']
         @m_password = moderator['pass']
@@ -29,62 +29,10 @@ module Modbot
       login_moderator
     end
 
-    def internet_agent
-      @r
-    end
-
-    def m_modrname
-      @m_modrname
-    end
-
-    def m_password
-      @m_password
-    end
- 
-    def m_uh
-      @uh
-    end
-
-    def timestamps_top 
-      @timestamps
-    end
-
-    #def m_pack
-    #  [@m_modrname, @m_password, @uh]
-    #end
-
-    #def belch_out_agent
-    #  @r.inspect
-    #end
-
     def login_moderator
       self.login(m_modrname,m_password)
       x = self.get_current_user(m_modrname)
       @uh = x.uh
-    end
-
-    def current_subreddits
-      z = []
-      self.subreddits.each do |x|
-        h = Hashie::Mash.new
-        h.name, h.report_limit, h.spam_limit, h.submission_limit = x[0], x[1], x[2], x[3]
-        z << h
-      end
-      z
-    end
-
-    def current_conditions
-      z = []
-      conditions.each do |x|
-        h = Hashie::Mash.new
-        h.subject, h.attribute, h.query, h.what, h.action = x[0].to_sym, x[1].to_sym, x[2].to_sym, x[3], x[4].to_sym
-        z << h
-      end
-      z
-    end
-
-    def current_conditions_bysubject(subject)
-      current_conditions.select { |x| x.subject == subject } 
     end
 
     def perform_action(action, item)
@@ -94,41 +42,21 @@ module Modbot
       when :remove
         self.remove(item.fullid)
       when :alert
-        self.perform_alert()
+        self.perform_alert([action.to_s, item])
       else
-        @l.info('nothing to perform') 
+        @l.info "Oddly, nothing to perform but perform action triggered"
       end
     end
 
-    def perform_alert(item)
-      @l.info('alert triggered')
-    end
-
-    #Checks reported items for any matching conditions.
-    #report, spam, or submission
-    def results_fetch(which_q, subreddit, limit)
-      which_to = self.method('get_reddit_' + which_q + 's')
-      results = which_to.call(subreddit.name, limit)
-      if results
-        @l.info('results fetched')
-      end
-      results = compare_times(results, which_q)
-      if results.empty?
-        @l.info('nothing to report')
-      else 
-        check_alerts( (which_q + '_limit').to_sym, results.count, subreddit)
-        results.each do |i|
-          check_conditions(i)  
-        end
-        #log end conditions check
-      end
+    def perform_alert(contents = [])
+      #
     end
 
     #Checks for items with more reports than the subreddit's threshold.
     def check_alerts(alert, count, subreddit)
       if subreddit.send(alert) <= count
-        perform_alert()
-        @l.info('check_alerts')
+        #perform_alert -- just notify from here
+        @l.info "I need to perform an alert, and I have done this"
       end
     end
 
@@ -137,7 +65,7 @@ module Modbot
       conditions = current_conditions_bysubject(item.kind.to_sym)
       conditions.each do |c| #unless conditions.empty? 
         check_condition(c, item)
-        @l.info('condition checked')
+        @l.info "condition #{[c.subject, c.attribute, c.query, c.what, c.action]} checked"
       end
     end
 
@@ -145,15 +73,21 @@ module Modbot
     def check_condition(condition, item)
       case condition.attribute
       when :author
-        i = item.author[0]
+        i = process_item(item.author[0])
       when :title
-        i = item.title
-      when :body
-        i = item.body
+        i = process_item(item.title)
+      when :body# should be able to take 
+        i = process_item(item.body)
       when :domain
-        i = URI(item.url).host
-      when :url
-        i = URI(item.url)
+        i = process_item(item.url)
+        i = i.each { |x| URI(x).host } #will take a list of domain names or urls
+      #when :url #not even close, will take some tweaking, do not use right now
+      #  i = []
+      #  item.url.each do |ii|
+      #    ii = URI(ii)
+      #    i << [ii.host, ii.path].reject { |s| s.empty? }
+      #  end
+      #  i.flatten
       when :self_post
         i = item.is_self
       when :min_account_age
@@ -171,9 +105,26 @@ module Modbot
       else
         #log action false or just pass
       end
-      @l.info('condition checked')
+      @l.info "for this condition: #{i} is to be checked against #{condition.attribute}"
     end
-  
+
+    #Checks reported items for any matching conditions: report, spam, or submission
+    def fetch_results(which_q, subreddit)
+      which_to = self.method('get_reddit_' + which_q + 's')
+      results = which_to.call(subreddit.name)#add way to override wrap limits 
+      @l.info "results fetched #{results.count} from #{which_q}"
+      results = compare_times(results, which_q)
+      if results.empty?
+        @l.info "nothing to report"
+      else 
+        check_alerts( (which_q + '_limit').to_sym, results.count, subreddit)
+        results.each do |i|
+          check_conditions(i)  
+        end
+        @l.info "all conditions checked"
+      end
+    end
+             
     #tests an item against a condition, returns true or false
     def test_condition(test_item, condition)
       case condition.query 
@@ -185,7 +136,12 @@ module Modbot
           true
         end
       when :contains
-        test = Regexp.union( (condition.what).split ) =~ test_item
+        condition.what.compact.reject { |s| s.empty? }
+        tt = []
+        condition.what.each do |t|
+          tt << Regexp.new(Regexp.escape(t))
+        end
+        test = Regexp.union tt =~ test_item
         if test.nil?
           false
         else
@@ -198,7 +154,7 @@ module Modbot
       else
         false 
       end
-      @l.info('item tested')
+      @l.info "#{test_item} tested for #{condition.query}"
     end
 
     #see if time has changed on newest item, filter for only items newer than last check

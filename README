@@ -36,7 +36,7 @@ Conditions
       [subject, attribute, query, item to query, action]
       ---------------------------------------------------------------------------------
       subject: submitted_link, comment
-      attribute: author, title, domain, url, self_post, min_account_age, min_link_karma, min_comment_karma, min_combined_karma]
+      attribute: author, title, domain, url(avoid this atm), self_post, min_account_age, min_link_karma, min_comment_karma, min_combined_karma]
       query: matches (complete phrase), contains (matches each word), is_less_than, is_greater_than
       what: your words, phrase, or number
       action: approve, remove, alert 
@@ -63,6 +63,10 @@ regular actions, refine what it is supposed to do exactly(check reddit mod queue
 refined condition testing options
 
 Added
+
+  0.0.3
+
+     - tossed stuff around, tuned and tweaked
 
   0.0.2
     

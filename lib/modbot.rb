@@ -13,7 +13,7 @@ module Modbot
     def initialize(config = :pass_param, moderator = {},subreddits = [], conditions = [])
       @l = Logger.new(STDOUT)
       @r = Mechanize.new{ |agent| agent.user_agent_alias = 'Mac Safari' }
-      @r.pre_connect_hooks << Proc.new { sleep 2 }
+      @r.pre_connect_hooks << Proc.new { sleep 2 }#s
       if config == :pass_param
         @m_modrname = moderator['name']
         @m_password = moderator['pass']
@@ -134,7 +134,7 @@ module Modbot
 
     #Checks an item against a set of conditions.
     def check_conditions(item)
-      conditions = current_conditions_bysubject(item.subject)
+      conditions = current_conditions_bysubject(item.kind.to_sym)
       conditions.each do |c| #unless conditions.empty? 
         check_condition(c, item)
         @l.info('condition checked')

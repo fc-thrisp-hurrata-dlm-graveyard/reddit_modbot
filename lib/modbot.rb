@@ -73,14 +73,13 @@ module Modbot
     def check_condition(condition, item)
       case condition.attribute
       when :author
-        i = process_item(item.author[0])
+        i = item.author[0]
       when :title
-        i = process_item(item.title)
+        i = item.title
       when :body# should be able to take 
-        i = process_item(item.body)
+        i = item.body
       when :domain
-        i = process_item(item.url)
-        i = i.each { |x| URI(x).host } #will take a list of domain names or urls
+        i = URI(item.url).host
       #when :url #not even close, will take some tweaking, do not use right now
       #  i = []
       #  item.url.each do |ii|
@@ -136,7 +135,7 @@ module Modbot
           true
         end
       when :contains
-        condition.what.compact.reject { |s| s.empty? }
+        #condition.what.compact.reject { |s| s.empty? }
         tt = []
         condition.what.each do |t|
           tt << Regexp.new(Regexp.escape(t))

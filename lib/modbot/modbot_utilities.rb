@@ -22,7 +22,7 @@ module ModbotUtilities
   end
 
   #takes arrays or single item returns array, useful for 'what' processing 
-  def process_item(processing) 
+  def process_what(processing) 
     if processing.kind_of?(Array)
       processing = processing
     else
@@ -48,7 +48,7 @@ module ModbotUtilities
     z = []
     conditions.each do |x|
       h = Hashie::Mash.new
-      h.subject, h.attribute, h.query, h.what, h.action = x[0].to_sym, x[1].to_sym, x[2].to_sym, x[3], x[4].to_sym
+      h.subject, h.attribute, h.query, h.what, h.action = x[0].to_sym, x[1].to_sym, x[2].to_sym, process_what(x[3]), x[4].to_sym
       z << h
     end
     z

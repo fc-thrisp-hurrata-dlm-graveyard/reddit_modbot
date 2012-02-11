@@ -6,7 +6,7 @@ module Modbot
 
   class ModBot
     include RedditWrap
-    #include ModbotUtilities
+    include ModbotUtilities
 
     attr_accessor :moderator, :subreddits, :conditions
 

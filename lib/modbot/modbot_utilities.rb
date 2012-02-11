@@ -25,11 +25,18 @@ module ModbotUtilities
   def process_what(processing) 
     if processing.kind_of?(Array)
       processing = processing
+      clean_up(processing)
+    elsif processing.kind_of(Integer)
+      processing = processing
     else
       processing = [] << processing
+      clean_up(processing)
     end
-    p = processing.reject { |s| s.empty? }
-    p.compact.flatten.uniq
+  end
+
+  def clean_up(clean)
+    c = clean.reject { |s| s.empty? }
+    c.compact.flatten.uniq
   end
 
   #returns subreddits put into this instance
@@ -48,7 +55,8 @@ module ModbotUtilities
     z = []
     conditions.each do |x|
       h = Hashie::Mash.new
-      h.subject, h.attribute, h.query, h.what, h.action = x[0].to_sym, x[1].to_sym, x[2].to_sym, process_what(x[3]), x[4].to_sym
+      h.subject, h.attribute, h.query, h.action = x[0].to_sym, x[1].to_sym, x[2].to_sym, x[4].to_sym
+      h.what = process_what(x[3])
       z << h
     end
     z

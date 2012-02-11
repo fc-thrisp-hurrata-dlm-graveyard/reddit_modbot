@@ -3,14 +3,8 @@ module RedditWrap
 #ad hoc reddit api wrapper
 
 #something more extensive to pull up all routes needed from simple cues
+#reddit_route('reports'
 #def reddit_route(route)
-#  case route
-#  when "c_user"
-#  when
-#  when
-#  when
-#  when
-#  end
 #end
 
 #http://www.reddit.com/user/#{USER_NAME}/about/.json
@@ -36,22 +30,25 @@ module RedditWrap
   end
 
 #http://www.reddit.com/r/#{SUBREDDIT}/new.json
-  def get_reddit_submissions(reddit_name, limit = 10)
+  def get_reddit_submissions(reddit_name, limit = 20)
     route = 'http://www.reddit.com/r/' + reddit_name + '/new.json'
     q_parse(route, limit)
   end
 
 #http://www.reddit.com/r/#{SUBREDDIT}/about/reports/.json
-  def get_reddit_reports(reddit_name)
+  def get_reddit_reports(reddit_name, limit = 20)
     route = 'http://www.reddit.com/r/' + reddit_name + '/about/reports/.json'
-    q_parse(route, "none")
+    q_parse(route, limit)
   end
 
 #http://www.reddit.com/r/#{SUBREDDIT}/about/spam/.json
-  def get_reddit_spams(reddit_name, limit = 5)
+  def get_reddit_spams(reddit_name, limit = 20)
     route = 'http://www.reddit.com/r/'+ reddit_name + '/about/spam/.json'
     q_parse(route, limit)
   end
+
+#http://www.reddit.com/message/moderator/.json
+#moderator messages for moderator
 
 #http://www.reddit.com/user/#{USER_NAME}/about/.json
   def reddit_user(name)
@@ -68,18 +65,18 @@ module RedditWrap
   end
 
 #http://www.reddit.com/api/approve
-  def approve(id, uh)
+  def approve(id)
     @r.post 'http://www.reddit.com/api/approve', 
           'id' => id , 
-          'uh' => uh,
+          'uh' => @uh,
           'api_type' => 'json'
   end
 
 #http://www.reddit.com/remove
-  def remove(id, uh)
+  def remove(id)
     @r.post 'http://www.reddit.com/api/remove', 
           'id' => id , 
-          'uh' => uh,
+          'uh' => @uh,
           'api_type' => 'json'
   end
 
@@ -93,7 +90,7 @@ module RedditWrap
     y = JSON.parse(x.body)['data']['children']
     z = []
     if y.empty?
-      z << "Nothing!"
+      z
     else
       y.each do |yy|
         h = Hashie::Mash.new

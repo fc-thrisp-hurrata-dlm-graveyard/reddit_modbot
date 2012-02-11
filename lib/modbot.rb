@@ -11,10 +11,9 @@ module Modbot
     attr_accessor :moderator, :subreddits, :conditions
 
     def initialize(config = :pass_param, moderator = {},subreddits = [], conditions = [])
+      @l = Logger.new(STDOUT)
       @r = Mechanize.new{ |agent| agent.user_agent_alias = 'Mac Safari' }
-      @r.pre_connect_hooks << Proc.new { sleep 1 }
-      #good for one, but what happens with a number of instances making requests?
-      #each unit would comprise a separate enitity, so as long as each plays by the api rules, then ok(ish)
+      @r.pre_connect_hooks << Proc.new { sleep 2 }
       if config == :pass_param
         @m_modrname = moderator['name']
         @m_password = moderator['pass']
@@ -31,7 +30,7 @@ module Modbot
     end
 
     def internet_agent
-      @r  # ||= Mechanize.new{ |agent| agent.user_agent_alias = 'Mac Safari' }
+      @r
     end
 
     def m_modrname
@@ -46,8 +45,16 @@ module Modbot
       @uh
     end
 
+    def timestamps_top 
+      @timestamps
+    end
+
     #def m_pack
     #  [@m_modrname, @m_password, @uh]
+    #end
+
+    #def belch_out_agent
+    #  @r.inspect
     #end
 
     def login_moderator
@@ -60,10 +67,7 @@ module Modbot
       z = []
       self.subreddits.each do |x|
         h = Hashie::Mash.new
-        h.name = x[0]
-        h.report_limit = x[1]
-        h.spam_limit = x[2]
-        h.submission_limit = x[3]
+        h.name, h.report_limit, h.spam_limit, h.submission_limit = x[0], x[1], x[2], x[3]
         z << h
       end
       z
@@ -83,10 +87,6 @@ module Modbot
       current_conditions.select { |x| x.subject == subject } 
     end
 
-    def belch_out_agent
-      @r.inspect
-    end
-
     def perform_action(action, item)
       case action
       when :approve
@@ -96,22 +96,25 @@ module Modbot
       when :alert
         self.perform_alert()
       else
-        #something isn't cool, pass or error 
+        @l.info('nothing to perform') 
       end
     end
 
     def perform_alert(item)
+      @l.info('alert triggered')
     end
 
-    #reports, spam, and submissions might be abstracted to one function instead of repeating 3 similar
     #Checks reported items for any matching conditions.
     #report, spam, or submission
-    #def results_fetch(subreddit, limit symbol) then pull that apart.... :spam_limit >>>> spam
     def results_fetch(which_q, subreddit, limit)
       which_to = self.method('get_reddit_' + which_q + 's')
       results = which_to.call(subreddit.name, limit)
-      if results == ["Nothing!"]
-        #log nothing to report
+      if results
+        @l.info('results fetched')
+      end
+      results = compare_times(results, which_q)
+      if results.empty?
+        @l.info('nothing to report')
       else 
         check_alerts( (which_q + '_limit').to_sym, results.count, subreddit)
         results.each do |i|
@@ -123,10 +126,9 @@ module Modbot
 
     #Checks for items with more reports than the subreddit's threshold.
     def check_alerts(alert, count, subreddit)
-      which_to = subreddit.method(alert)
-      if which_to.call <= count
-        self.perform_alert()
-        #log alert
+      if subreddit.send(alert) <= count
+        perform_alert()
+        @l.info('check_alerts')
       end
     end
 
@@ -135,6 +137,7 @@ module Modbot
       conditions = current_conditions_bysubject(item.subject)
       conditions.each do |c| #unless conditions.empty? 
         check_condition(c, item)
+        @l.info('condition checked')
       end
     end
 
@@ -166,9 +169,9 @@ module Modbot
       if result
         perform_action(condition.action, item)
       else
-        false#log action false or just pass
+        #log action false or just pass
       end
-    #log_action(condition, item)
+      @l.info('condition checked')
     end
   
     #tests an item against a condition, returns true or false
@@ -195,28 +198,20 @@ module Modbot
       else
         false 
       end
+      @l.info('item tested')
     end
 
-    #
-    #def perform_regular
-      #make a config item 
-      #puts "check reports"
-      #puts "check spam"
-      #puts "check new submissions"
-    #  belch_out_agent
-    #end
-
-    def timestamps_top 
-      @timestamps
+    #see if time has changed on newest item, filter for only items newer than last check
+    def compare_times(results, which_q)
+      if @timestamps.send(which_q.to_sym).nil?
+        @timestamps[ (which_q +'_last')] = results[0].timestamp
+        results = results
+      else
+        what_time = (which_q + '_last').to_sym
+        time_to_check = @timestamps.send(what_time)
+        results.select { |r| r.timestamp > time_to_check }
+      end
     end
-
-    #see if time has changed on newest item
-    #def compare_timestamps(for_what, for_when)
-    #  if @timestamps.send(for_what).nil?
-    #    #top time stamp is now
-    #  elsif
-    #  end
-    #end
 
   end
 

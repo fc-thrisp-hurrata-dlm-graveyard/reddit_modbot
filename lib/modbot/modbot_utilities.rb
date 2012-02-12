@@ -1,6 +1,6 @@
 module ModbotUtilities
 
-  #misc stuff to useful form
+  #misc stuff in useful/informative form
   def internet_agent
     @r
   end
@@ -15,6 +15,10 @@ module ModbotUtilities
  
   def m_uh
     @uh
+  end
+
+  def current_conditions
+    @conditions
   end
 
   def timestamps_top 
@@ -70,19 +74,6 @@ module ModbotUtilities
       z << h
     end
     z
-  end
-
-  #returns conditions put into this instance
-  def current_conditions
-    @conditions
-    #z = []
-    #conditions.each do |x|
-    #  h = Hashie::Mash.new
-    #  h.subject, h.attribute, h.query, h.action = x[0].to_sym, x[1].to_sym, x[2].to_sym, x[4].to_sym
-    #  h.what = process_what(x[3])
-    #  z << h
-    #end
-    #z
   end
   
   def current_conditions_bysubject(subject)

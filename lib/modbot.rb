@@ -46,18 +46,19 @@ module Modbot
     end
 
     #Checks reported items for any matching conditions: report, spam, or submission
-    def fetch_results(which_q, subreddit)
+    def fetch_results(which_q, subreddit, limit)
       which_to = self.method('get_reddit_' + which_q + 's')
-      results = which_to.call(subreddit.name)#add way to override wrap limits 
+      results = which_to.call(subreddit.name, limit) 
       @l.info "results fetched #{results.count} from #{which_q}"
       results = compare_times(results, which_q)
       if results.empty?
         @l.info "nothing to report, #{which_q} is empty"
+        subreddit[(which_q + '_recent')] = [] #stopped working for some reason
       else
         @l.info "#{results.count} new items from #{which_q} to check"
         check_alerts( (which_q + '_limit').to_sym, results.count, subreddit)
+        subreddit[(which_q + '_recent')] = results#stopped working for some reason, outside of loop
       end
-      subreddit[(which_q + '_recent')] = results
     end
 
     #see if time has changed on newest item, filter for only items newer than last check

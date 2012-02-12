@@ -137,7 +137,7 @@ module Modbot
         i = (item.author[3] + item.author[4])
       end
       result = test_condition(condition, i)
-      if result
+      if result == :pass
         item.verdict << condition.action
       else
         item.verdict << :fail
@@ -151,17 +151,18 @@ module Modbot
       case condition.query 
       when :matches || :contains
         test = condition.what =~ test_item
-        if test.nil?
-          test = false
-        else
-          test = true
-        end
       when :is_greater_than
         test = test_item > condition.what
       when :is_less_than
         test = test_item < condition.what
       end
-      #test
+      if test.nil?
+        test = :fail
+      if test == false
+        test = :fail 
+      else
+        test = :pass
+      end
       @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{test}"
     end
 

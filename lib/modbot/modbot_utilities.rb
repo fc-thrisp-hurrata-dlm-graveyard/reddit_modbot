@@ -17,18 +17,6 @@ module ModbotUtilities
     @uh
   end
 
-  def recent_spams
-    @recent_spams
-  end
-  
-  def recent_reports
-    @recent_reports
-  end
-
-  def recent_submissions
-    @recent_submissions
-  end 
-
   def timestamps_top 
     @timestamps
   end

@@ -34,9 +34,6 @@ module Modbot
         @conditions = mbc['conditions']
       end
       @timestamps = Hashie::Mash.new
-      @recent_spam = []
-      @recent_submissions = [] 
-      @recent_reports = []
       login_moderator
     end
 

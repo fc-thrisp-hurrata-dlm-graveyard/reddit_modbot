@@ -148,21 +148,26 @@ module Modbot
     #tests an item against a condition, returns true or false
     def test_condition(test_item, condition)
       case condition.query 
-      when :matches
+      when :matches || :contains
         #test = Regexp.union(condition.what)#move up into condition processing, i.e. do once instead of each time
         test = condition.what =~ test_item
+        if test.nil?
+          test = false
+        else
+          test = true
+        end
         #if test.nil?
         #  false
         #else
         #  true
         #end
-      when :contains
+      #when :contains
         #tt = []
         #condition.what.each do |t|
         #  tt << Regexp.new(Regexp.escape(t))
         #end
         #test = Regexp.union tt
-        test = condition.what =~ test_item
+        #test = condition.what =~ test_item
         #if test.nil?
         #  false
         #else
@@ -175,13 +180,7 @@ module Modbot
       else
         test = false 
       end
-      if test.integer?
-        test = true
-      elsif test.nil?
-        test = false
-      else
-        test = test
-      end
+
       @l.info "#{test_item} tested for #{condition.query} ::: #{test}"
     end
 

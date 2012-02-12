@@ -135,12 +135,13 @@ module Modbot
           true
         end
       when :contains
-        #condition.what.compact.reject { |s| s.empty? }
         tt = []
         condition.what.each do |t|
           tt << Regexp.new(Regexp.escape(t))
         end
-        test = Regexp.union tt =~ test_item
+        #test = Regexp.union tt =~ test_item  # TypeError: can't convert NilClass to String
+        test = Regexp.union tt
+        test =~ test_item
         if test.nil?
           false
         else

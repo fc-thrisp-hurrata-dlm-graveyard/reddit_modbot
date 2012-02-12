@@ -113,6 +113,7 @@ module Modbot
       results = which_to.call(subreddit.name)#add way to override wrap limits 
       @l.info "results fetched #{results.count} from #{which_q}"
       results = compare_times(results, which_q)
+      @l.info "only #{results.count} are new"
       if results.empty?
         @l.info "nothing to report"
       else 
@@ -165,7 +166,7 @@ module Modbot
       else
         what_time = (which_q + '_last').to_sym
         time_to_check = @timestamps.send(what_time)
-        results.select { |r| r.timestamp > time_to_check }
+        results = results.select { |r| r.timestamp > time_to_check }
       end
     end
 

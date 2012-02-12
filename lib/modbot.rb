@@ -65,7 +65,7 @@ module Modbot
     def compare_times(results, which_q)
       if @timestamps.send(which_q.to_sym).nil?
         @l.info "this is the most recent set of results for #{which_q}"
-        if results.nil?
+        if results.empty?
            @timestamps[(which_q +'_last')] = Time.now.to_f.round(3)
         else
            @timestamps[(which_q +'_last')] = results[0].timestamp

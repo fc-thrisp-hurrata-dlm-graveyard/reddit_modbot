@@ -150,7 +150,7 @@ module Modbot
       case condition.query 
       when :matches
         #test = Regexp.union(condition.what)#move up into condition processing, i.e. do once instead of each time
-        condition.what =~ test_item
+        test = condition.what =~ test_item
         if test.nil?
           false
         else
@@ -162,7 +162,7 @@ module Modbot
         #  tt << Regexp.new(Regexp.escape(t))
         #end
         #test = Regexp.union tt
-        condition.what =~ test_item
+        test = condition.what =~ test_item
         if test.nil?
           false
         else

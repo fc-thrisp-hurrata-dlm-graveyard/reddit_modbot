@@ -26,6 +26,9 @@ module Modbot
         @conditions = mbc['conditions']
       end
       @timestamps = Hashie::Mash.new
+      @recent_spam = []
+      @recent_submissions = [] 
+      @recent_reports = []
       login_moderator
     end
 
@@ -33,6 +36,21 @@ module Modbot
       self.login(m_modrname,m_password)
       x = self.get_current_user(m_modrname)
       @uh = x.uh
+    end
+
+    #Checks reported items for any matching conditions: report, spam, or submission
+    def fetch_results(which_q, subreddit)
+      which_to = self.method('get_reddit_' + which_q + 's')
+      results = which_to.call(subreddit.name)#add way to override wrap limits 
+      @l.info "results fetched #{results.count} from #{which_q}"
+      results = compare_times(results, which_q)
+      @l.info "only #{results.count} are new"
+      if results.empty?
+        @l.info "nothing to report"
+      else
+        @l.info "#{results.count} new items from #{which_q} to check"
+      end
+     self.send('recent_' + which_q + 's') = results
     end
 
     def perform_action(action, item)
@@ -59,6 +77,16 @@ module Modbot
         @l.info "I need to perform an alert, and I have done this"
       end
     end
+
+    #Check a results set
+    #def check_results(results_set)
+    #        check_alerts( (which_q + '_limit').to_sym, results.count, subreddit)
+    #    results.each do |i|
+    #      check_conditions(i)  
+    #    end
+    #    @l.info "all conditions checked"
+    #  end
+    #end
 
     #Checks an item against a set of conditions.
     def check_conditions(item)
@@ -106,24 +134,6 @@ module Modbot
       end
       @l.info "for this condition: #{i} is to be checked against #{condition.attribute}"
     end
-
-    #Checks reported items for any matching conditions: report, spam, or submission
-    def fetch_results(which_q, subreddit)
-      which_to = self.method('get_reddit_' + which_q + 's')
-      results = which_to.call(subreddit.name)#add way to override wrap limits 
-      @l.info "results fetched #{results.count} from #{which_q}"
-      results = compare_times(results, which_q)
-      @l.info "only #{results.count} are new"
-      if results.empty?
-        @l.info "nothing to report"
-      else 
-        check_alerts( (which_q + '_limit').to_sym, results.count, subreddit)
-        results.each do |i|
-          check_conditions(i)  
-        end
-        @l.info "all conditions checked"
-      end
-    end
              
     #tests an item against a condition, returns true or false
     def test_condition(test_item, condition)
@@ -161,7 +171,7 @@ module Modbot
     #see if time has changed on newest item, filter for only items newer than last check
     def compare_times(results, which_q)
       if @timestamps.send(which_q.to_sym).nil?
-        @timestamps[ (which_q +'_last')] = results[0].timestamp
+        @timestamps(which_q +'_last') = results[0].timestamp
         results = results
       else
         what_time = (which_q + '_last').to_sym
@@ -169,7 +179,6 @@ module Modbot
         results = results.select { |r| r.timestamp > time_to_check }
       end
     end
-
+   
   end
-
 end

@@ -5,6 +5,13 @@ require "modbot/modbot_utilities"
 module Modbot
 
   class ModBot
+
+    #main(fetch       -- results,
+    #     compare     -- times,
+    #     check       -- items/conditions,
+    #     test        -- item what / condition attribute,
+    #     perform     -- approve/remove/alert moderator )
+
     include RedditWrap
     include ModbotUtilities
 
@@ -46,48 +53,44 @@ module Modbot
       results = compare_times(results, which_q)
       @l.info "only #{results.count} are new"
       if results.empty?
-        @l.info "nothing to report"
+        @l.info "nothing to report, #{which_q} is empty"
       else
         @l.info "#{results.count} new items from #{which_q} to check"
+        check_alerts( (which_q + '_limit').to_sym, results.count, subreddit)
       end
-     which_recent = self.method('recent_' + which_q + 's')
-     which_recent.call = results
+      subreddit[(which_q + '_recent')] = results
     end
 
-    def perform_action(action, item)
-      case action
-      when :approve
-        self.approve(item.fullid)
-      when :remove
-        self.remove(item.fullid)
-      when :alert
-        self.perform_alert([action.to_s, item])
+    #see if time has changed on newest item, filter for only items newer than last check
+    def compare_times(results, which_q)
+      if @timestamps.send(which_q.to_sym).nil?
+        @timestamps[(which_q +'_last')] = results[0].timestamp
+        results = results
+        @l.info "this is the most recent set of results for #{which_q}"
       else
-        @l.info "Oddly, nothing to perform but perform action triggered"
+        what_time = (which_q + '_last').to_sym
+        time_to_check = @timestamps.send(what_time)
+        results = results.select { |r| r.timestamp > time_to_check }
+        @timestamps[(which_q +'_last')] = results[0].timestamp
+        @l.info "#{which_q} results filtered against most recent time of check, new timestamp #{results[0].timestamp}"
       end
-    end
-
-    def perform_alert(contents = [])
-      #
     end
 
     #Checks for items with more reports than the subreddit's threshold.
-    def check_alerts(alert, count, subreddit)
-      if subreddit.send(alert) <= count
-        #perform_alert -- just notify from here
-        @l.info "I need to perform an alert, and I have done this"
+    def check_alerts(subreddit_alert, results_count, subreddit)
+      if subreddit.send(subreddit_alert) <= results_count
+        #perform_alert
+        @l.info "alert : #{results_count} exceed #{subreddit.send(subreddit_alert)} items for #{subreddit.name}"
       end
     end
 
     #Check a results set
-    #def check_results(results_set)
-    #        check_alerts( (which_q + '_limit').to_sym, results.count, subreddit)
-    #    results.each do |i|
-    #      check_conditions(i)  
-    #    end
-    #    @l.info "all conditions checked"
-    #  end
-    #end
+    def check_results(results_set)
+      results_set.each do |i|
+        check_conditions(i)  
+      end
+      @l.info "all conditions checked from this result set"
+    end
 
     #Checks an item against a set of conditions.
     def check_conditions(item)
@@ -133,14 +136,15 @@ module Modbot
       else
         #log action false or just pass
       end
-      @l.info "for this condition: #{i} is to be checked against #{condition.attribute}"
+      @l.info "#{i} to be checked against #{condition.attribute}"
     end
              
     #tests an item against a condition, returns true or false
     def test_condition(test_item, condition)
       case condition.query 
       when :matches
-        test = Regexp.union(condition.what) =~ test_item
+        test = Regexp.union(condition.what)#move up into condition processing, i.e. do once instead of each time
+        test =~ test_item
         if test.nil?
           false
         else
@@ -151,7 +155,6 @@ module Modbot
         condition.what.each do |t|
           tt << Regexp.new(Regexp.escape(t))
         end
-        #test = Regexp.union tt =~ test_item  # TypeError: can't convert NilClass to String
         test = Regexp.union tt
         test =~ test_item
         if test.nil?
@@ -169,17 +172,34 @@ module Modbot
       @l.info "#{test_item} tested for #{condition.query}"
     end
 
-    #see if time has changed on newest item, filter for only items newer than last check
-    def compare_times(results, which_q)
-      if @timestamps.send(which_q.to_sym).nil?
-        @timestamps[(which_q +'_last')] = results[0].timestamp
-        results = results
+    def perform_action(action, item)
+      case action
+      when :approve
+        self.approve(item.fullid)
+      when :remove
+        self.remove(item.fullid)
+      when :alert
+        self.perform_alert([action.to_s, item])
       else
-        what_time = (which_q + '_last').to_sym
-        time_to_check = @timestamps.send(what_time)
-        results = results.select { |r| r.timestamp > time_to_check }
+        @l.info "Oddly, nothing to perform but perform action triggered"
       end
     end
+
+    def perform_alert(contents = [])
+    end
    
+    def check_subreddit(for_what)#["spam", "report", "submission"] or any combo of
+      
+      current_subreddits.each do |s|
+        for_what.each do |fw|
+          #fetch_results(fw, s)
+          @l.info "fetch results #{fw} for #{s.name}" 
+          #check_results(s[(fw + '_recent')]
+          @l.info "check results #{s.name} #{fw}_recent"
+        end
+      end
+        
+    end
+
   end
 end

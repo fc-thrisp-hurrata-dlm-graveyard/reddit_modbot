@@ -151,11 +151,11 @@ module Modbot
       when :matches
         #test = Regexp.union(condition.what)#move up into condition processing, i.e. do once instead of each time
         test = condition.what =~ test_item
-        if test.nil?
-          false
-        else
-          true
-        end
+        #if test.nil?
+        #  false
+        #else
+        #  true
+        #end
       when :contains
         #tt = []
         #condition.what.each do |t|
@@ -163,19 +163,19 @@ module Modbot
         #end
         #test = Regexp.union tt
         test = condition.what =~ test_item
-        if test.nil?
-          false
-        else
-          true
-        end
+        #if test.nil?
+        #  false
+        #else
+        #  true
+        #end
       when :is_greater_than
-        test_item > condition.what
+        test = test_item > condition.what
       when :is_less_than
-        test_item < condition.what
+        test = test_item < condition.what
       else
         false 
       end
-      @l.info "#{test_item} tested for #{condition.query}"
+      @l.info "#{test_item} tested for #{condition.query}::: #{test}"
     end
 
     def process_results(results_set)

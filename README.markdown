@@ -17,66 +17,45 @@ instance -- still needs tweaking)
                        moderator = {'name' => '', 'password' => ''},
                        subreddits = [[], [], []]
                        conditions = [ [], [], []])
-Moderator
 
-  As a hash { 'name' => '', 'password' => ''}, or see config file example.
+- Moderator: As a hash { 'name' => '', 'password' => ''}, or see config file example.
 
-Subreddits
+- Subreddits: As an array of arrays or see config file example. Numbers are limits for reports, spam, and submissions respectively
 
-- As an array of arrays [ [subreddit, 10, 10, 10], [subreddit, 1, 20, 5] ] or 
-see config file example.
+- Conditions: As an array of arrays containing strings, see config file example. Each condition is an array: [subject, attribute, query, item to query, action]
+ 
+  - subject: submitted_link, comment
 
-- Numbers are limits for reports, spam, and submissions respectively
+  - attribute: author, title, domain, url(avoid this atm), self_post, min_account_age, min_link_karma, min_comment_karma, min_combined_karma]
 
-Conditions
+  - query: matches (complete phrase or word), contains (matches each quoted phrase or word), is_less_than, is_greater_than
 
-  As an array of arrays containing strings, see config file example.
+  - what: your words, phrases, or number
 
-  Each condition is an array: [subject, attribute, query, item to query, action]
-  ---------------------------------------------------------------------------------
-  subject:
-    submitted_link, comment
-  attribute:
-    author, title, domain, url(avoid this atm), self_post, min_account_age, min_link_karma, min_comment_karma, min_combined_karma]
-  query:
-    matches (complete phrase), contains (matches each quoted phrase or word), is_less_than, is_greater_than
-  what:
-    your words, phrases, or number
-  action:
-    approve, remove, alert(does nothing atm)
+  - action: approve, remove, alert(does nothing atm)
 
 TODO / Issues
+---
 
-everything is sort of bits and pieces atm 
+- everything is sort of bits and pieces atm 
 
-tests and testing
+- tests and testing
 
-regular actions, refine what it is supposed to do exactly(check reddit mod queues and respond appropriately)
+- regular actions, refine what it is supposed to do exactly(check reddit mod queues and respond appropriately)
 
-refined condition testing options
+- refined condition testing options
 
-The current rate limiting seems to affect EVERYTHING
+- The current rate limiting seems to affect EVERYTHING
 
-conditions should be configured carefully....a quick first run through has shown
+- conditions should be configured carefully....a quick first run through has shown
   that items can be removed and approved and removed and approved...perhaps some sort of
   item with the process that tracks approvals/disapprovals and takes action based
   on a decisions, hmmmm
 
-time check isn't quite right
+- time check isn't quite right
 
-Added
 
-  0.0.3
-
-     - tossed stuff around, tuned and tweaked
-
-  0.0.2
-    
-    - rate limit instance agent to once per second with simple Proc
-
-    - config file sort of implemented
-      intialialize from config file (via passed param of where) or pass into class instance
-
-Think about:
+Think about
+---
 
   - wrappers modularization, e.g. use a modbot instance for a specific api, decouple from reddit and allow numerous api types

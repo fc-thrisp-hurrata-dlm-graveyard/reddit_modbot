@@ -10,6 +10,7 @@ module Modbot
     #     compare     -- times,
     #     check       -- items/conditions,
     #     test        -- item what / condition attribute,
+    #     process     -- check item verdicts
     #     perform     -- approve/remove/alert moderator )
 
     include RedditWrap
@@ -51,7 +52,6 @@ module Modbot
       results = which_to.call(subreddit.name)#add way to override wrap limits 
       @l.info "results fetched #{results.count} from #{which_q}"
       results = compare_times(results, which_q)
-      @l.info "only #{results.count} are new"
       if results.empty?
         @l.info "nothing to report, #{which_q} is empty"
       else
@@ -137,7 +137,7 @@ module Modbot
       end
       result = test_condition(i, condition)
       if result
-        perform_action(condition.action, item)
+        item.verdict << condition.action
       else
         #log action false or just pass
       end
@@ -177,6 +177,18 @@ module Modbot
       @l.info "#{test_item} tested for #{condition.query}"
     end
 
+    def process_results(results_set)
+      results_set.each do |v|
+        if verdict.empty?
+        else
+          verdict = v.verdict {|x| x == :approve }.to_f / v.verdict {|x| x == :remove }.to_f
+          verdict >= 1 ? action = :approve : action = :remove
+          v.score = verdict
+          perform_action(action, v)
+        end
+      end
+    end
+
     def perform_action(action, item)
       case action
       when :approve
@@ -201,9 +213,11 @@ module Modbot
       current_subreddits.each do |s|
         for_what.each do |fw|
           #fetch_results(fw, s)
-          @l.info "fetch results #{fw} for #{s.name}" 
+          @l.info "fetched results #{fw} for #{s.name}" 
           #check_results(s[(fw + '_recent')]
-          @l.info "check results #{s.name} #{fw}_recent"
+          @l.info "checked results #{s.name} #{fw}_recent"
+          #process_results(s[(fw + '_recent')]
+          @l.info "processed results #{s.name} #{fw}_recent"
         end
       end
         

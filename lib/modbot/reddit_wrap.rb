@@ -94,6 +94,7 @@ module RedditWrap
     else
       y.each do |yy|
         h = Hashie::Mash.new
+        h.verdict = []
         h.timestamp = yy['data']['created']
         h.id = yy['data']['id']
         h.fullid = yy['data']['name']

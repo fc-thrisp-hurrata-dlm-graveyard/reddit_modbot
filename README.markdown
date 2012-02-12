@@ -47,12 +47,10 @@ TODO / Issues
 
 - The current rate limiting seems to affect EVERYTHING
 
-- conditions should be configured carefully....a quick first run through has shown
-  that items can be removed and approved and removed and approved...perhaps some sort of
-  item with the process that tracks approvals/disapprovals and takes action based
+- conditions should be configured carefully....a quick run throughs have shown
+  that items can be removed and approved and removed and approved, etc et al. with conflicting results. Perhaps some sort of summary/decision addition to the process
   on a decisions, hmmmm
 
-- time check isn't quite right
 
 
 Think about

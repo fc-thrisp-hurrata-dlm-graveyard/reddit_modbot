@@ -7,7 +7,7 @@ subreddits:
   - [yyyyy, 10, 10, 10]
 
 conditions:
-  - [comment, author, contains, "none", remove]  
+  - [comment, author, contains, "OneAuthor", remove]  
   - [comment, body, contains, "none", remove]
   - [comment, min_comment_karma, is_less_than, 100, remove]
   - [submitted_link, author, contains, "no", remove]

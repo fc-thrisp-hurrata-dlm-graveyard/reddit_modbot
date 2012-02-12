@@ -17,23 +17,12 @@ instance -- still needs tweaking)
                        moderator = {'name' => '', 'password' => ''},
                        subreddits = [[], [], []]
                        conditions = [ [], [], []])
-Moderator
 
-  As a hash { 'name' => '', 'password' => ''}, or see config file example.
+- Moderator: As a hash { 'name' => '', 'password' => ''}, or see config file example.
 
-Subreddits
+- Subreddits: As an array of arrays or see config file example. Numbers are limits for reports, spam, and submissions respectively
 
-- As an array of arrays [ [subreddit, 10, 10, 10], [subreddit, 1, 20, 5] ] or 
-see config file example.
-
-- Numbers are limits for reports, spam, and submissions respectively
-
-Conditions
-
-  As an array of arrays containing strings, see config file example.
-
-  Each condition is an array: [subject, attribute, query, item to query, action]
-  ---------------------------------------------------------------------------------
+- Conditions: As an array of arrays containing strings, see config file example. Each condition is an array: [subject, attribute, query, item to query, action]
  
   - subject: submitted_link, comment
 
@@ -45,7 +34,8 @@ Conditions
 
   - action: approve, remove, alert(does nothing atm)
 
-**TODO / Issues**
+TODO / Issues
+---
 
 - everything is sort of bits and pieces atm 
 
@@ -64,19 +54,8 @@ Conditions
 
 - time check isn't quite right
 
-Added
 
-  0.0.3
-
-     - tossed stuff around, tuned and tweaked
-
-  0.0.2
-    
-    - rate limit instance agent to once per second with simple Proc
-
-    - config file sort of implemented
-      intialialize from config file (via passed param of where) or pass into class instance
-
-Think about:
+Think about
+---
 
   - wrappers modularization, e.g. use a modbot instance for a specific api, decouple from reddit and allow numerous api types

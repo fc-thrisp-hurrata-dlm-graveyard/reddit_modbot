@@ -182,8 +182,16 @@ module Modbot
       results_set.each do |v|
         if v.verdict.empty?
         else
-          verdict = v.verdict {|x| x == :approve }.to_f / v.verdict {|x| x == :remove }.to_f
-          verdict >= 1 ? action = :approve : action = :remove
+          verdict = v.verdict {|x| x == :approve }.count.to_f / v.verdict {|x| x == :remove }.count.to_f
+          if verdict.infinite?
+            verdict = 1
+            action = :approve
+          elsif verdict.nan?
+            verdict = 0
+            action = :inconclusive
+          else
+            verdict >= 1 ? action = :approve : action = :remove
+          end
           v.score = verdict
           perform_action(action, v)
         end
@@ -192,6 +200,8 @@ module Modbot
 
     def perform_action(action, item)
       case action
+      when :inconclusive
+        @l.info "not enough data to remove or approve this item"
       when :approve
         self.approve(item.fullid)
         @l.info "approved #{item.fullid}" # better description needed

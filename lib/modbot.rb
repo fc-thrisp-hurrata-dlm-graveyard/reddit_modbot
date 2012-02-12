@@ -136,13 +136,12 @@ module Modbot
       when :min_combined_karma
         i = (item.author[3] + item.author[4])
       end
-      result = test_condition(condition, i)
-      item.verdict << result
       @l.info "#{i} to be checked against #{condition.attribute}"
+      test_condition(condition, item, i)
     end
              
     #tests an item against a condition, returns true or false
-    def test_condition(condition, test_item)
+    def test_condition(condition, item, test_item)
       case condition.query 
       when :matches || :contains
         test = condition.what =~ test_item
@@ -151,14 +150,13 @@ module Modbot
       when :is_less_than
         test = test_item < condition.what
       end
-      if test.nil?
-        test = :fail
-      elsif test == false
-        test = :fail 
+      if test.kind_of?(Integer) || test == true
+        item.verdict << :pass
+      elsif test.nil? || test == false
+        item.verdict << :fail 
       else
-        test = :pass
+        test = :fail
       end
-      test
       @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{test}"
     end
 

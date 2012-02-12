@@ -137,7 +137,7 @@ module Modbot
         i = (item.author[3] + item.author[4])
       end
       result = test_condition(i, condition)
-      if result
+      if result == true
         item.verdict << condition.action
       else
         item.verdict << :fail
@@ -149,30 +149,12 @@ module Modbot
     def test_condition(test_item, condition)
       case condition.query 
       when :matches || :contains
-        #test = Regexp.union(condition.what)#move up into condition processing, i.e. do once instead of each time
         test = condition.what =~ test_item
         if test.nil?
           test = false
         else
           test = true
         end
-        #if test.nil?
-        #  false
-        #else
-        #  true
-        #end
-      #when :contains
-        #tt = []
-        #condition.what.each do |t|
-        #  tt << Regexp.new(Regexp.escape(t))
-        #end
-        #test = Regexp.union tt
-        #test = condition.what =~ test_item
-        #if test.nil?
-        #  false
-        #else
-        #  true
-        #end
       when :is_greater_than
         test = test_item > condition.what
       when :is_less_than
@@ -180,8 +162,7 @@ module Modbot
       else
         test = false 
       end
-
-      @l.info "#{test_item} tested for #{condition.query} ::: #{test}"
+      @l.info "#{test_item} ::: #{condition.query} ::: #{test}"
     end
 
     def process_results(results_set)

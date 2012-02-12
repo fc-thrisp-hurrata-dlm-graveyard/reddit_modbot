@@ -140,7 +140,7 @@ module Modbot
       if result
         item.verdict << condition.action
       else
-        #log action false or just pass
+        item.verdict << :fail
       end
       @l.info "#{i} to be checked against #{condition.attribute}"
     end
@@ -173,9 +173,16 @@ module Modbot
       when :is_less_than
         test = test_item < condition.what
       else
-        false 
+        test = false 
       end
-      @l.info "#{test_item} tested for #{condition.query}::: #{test}"
+      if test.integer?
+        test = true
+      elsif test.nil?
+        test = false
+      else
+        test = test
+      end
+      @l.info "#{test_item} tested for #{condition.query} ::: #{test}"
     end
 
     def process_results(results_set)

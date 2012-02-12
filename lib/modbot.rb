@@ -180,7 +180,7 @@ module Modbot
 
     def process_results(results_set)
       results_set.each do |v|
-        if verdict.empty?
+        if v.verdict.empty?
         else
           verdict = v.verdict {|x| x == :approve }.to_f / v.verdict {|x| x == :remove }.to_f
           verdict >= 1 ? action = :approve : action = :remove

@@ -158,7 +158,7 @@ module Modbot
       end
       if test.nil?
         test = :fail
-      if test == false
+      elsif test == false
         test = :fail 
       else
         test = :pass

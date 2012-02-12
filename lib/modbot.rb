@@ -64,9 +64,9 @@ module Modbot
     #see if time has changed on newest item, filter for only items newer than last check
     def compare_times(results, which_q)
       if @timestamps.send(which_q.to_sym).nil?
-        @timestamps[(which_q +'_last')] = results[0].timestamp
-        results = results
         @l.info "this is the most recent set of results for #{which_q}"
+        @timestamps[(which_q +'_last')] = results[0].timestamp || Time.now.to_f.round(3)
+        results = results
       else
         what_time = (which_q + '_last').to_sym
         time_to_check = @timestamps.send(what_time)
@@ -74,6 +74,7 @@ module Modbot
         @timestamps[(which_q +'_last')] = results[0].timestamp
         @l.info "#{which_q} results filtered against most recent time of check, new timestamp #{results[0].timestamp}"
       end
+      results
     end
 
     #Checks for items with more reports than the subreddit's threshold.
@@ -176,8 +177,10 @@ module Modbot
       case action
       when :approve
         self.approve(item.fullid)
+        @l.info "approved #{item.fullid}" # better description needed
       when :remove
         self.remove(item.fullid)
+        @l.info "removed #{item.fullid}" # better description needed
       when :alert
         self.perform_alert([action.to_s, item])
       else
@@ -188,6 +191,7 @@ module Modbot
     def perform_alert(contents = [])
     end
    
+    #make less clumsy
     def check_subreddit(for_what)#["spam", "report", "submission"] or any combo of
       
       current_subreddits.each do |s|

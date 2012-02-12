@@ -182,7 +182,7 @@ module Modbot
       results_set.each do |v|
         if v.verdict.empty?
         else
-          verdict = v.verdict {|x| x == :approve }.count.to_f / v.verdict {|x| x == :remove }.count.to_f
+          verdict = v.verdict.count {|x| x == :approve }.to_f / v.verdict.count {|x| x == :remove }.to_f
           if verdict.infinite?
             verdict = 1
             action = :approve

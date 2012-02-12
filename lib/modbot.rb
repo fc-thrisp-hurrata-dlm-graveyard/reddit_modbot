@@ -137,12 +137,7 @@ module Modbot
         i = (item.author[3] + item.author[4])
       end
       result = test_condition(condition, i)
-      if result == :pass
-        item.verdict << condition.action
-      else
-        item.verdict << :fail
-      end
-      @l.info "#{result} WTF lets get this done"
+      item.verdict << result
       @l.info "#{i} to be checked against #{condition.attribute}"
     end
              
@@ -163,6 +158,7 @@ module Modbot
       else
         test = :pass
       end
+      test
       @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{test}"
     end
 
@@ -170,10 +166,10 @@ module Modbot
       results_set.each do |v|
         if v.verdict.empty?
         else
-          verdict = v.verdict.count {|x| x == :approve }.to_f / v.verdict.count {|x| x == :remove }.to_f
+          verdict = v.verdict.count {|x| x == :pass }.to_f / v.verdict.count {|x| x == :fail }.to_f
           if verdict.infinite?
             verdict = 1
-            action = :approve
+            action = v.action
           elsif verdict.nan?
             verdict = 0
             action = :inconclusive

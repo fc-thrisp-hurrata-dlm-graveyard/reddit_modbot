@@ -136,17 +136,18 @@ module Modbot
       when :min_combined_karma
         i = (item.author[3] + item.author[4])
       end
-      result = test_condition(i, condition)
-      if result == true
+      result = test_condition(condition, i)
+      if result
         item.verdict << condition.action
       else
         item.verdict << :fail
       end
+      @l.info "#{result} WTF lets get this done"
       @l.info "#{i} to be checked against #{condition.attribute}"
     end
              
     #tests an item against a condition, returns true or false
-    def test_condition(test_item, condition)
+    def test_condition(condition, test_item)
       case condition.query 
       when :matches || :contains
         test = condition.what =~ test_item

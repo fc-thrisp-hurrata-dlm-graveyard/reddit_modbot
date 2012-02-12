@@ -21,7 +21,8 @@ module Modbot
     def initialize(config = :pass_param, moderator = {},subreddits = [], conditions = [])
       @l = Logger.new(STDOUT)
       @r = Mechanize.new{ |agent| agent.user_agent_alias = 'Mac Safari' }
-      @r.post_connect_hooks << Proc.new { sleep 2 }#s
+      #@r.post_connect_hooks << Proc.new { sleep 2 }
+      @r.history_added = Proc.new {sleep 2}
       if config == :pass_param
         @m_modrname = moderator['name']
         @m_password = moderator['pass']
@@ -33,6 +34,7 @@ module Modbot
         @subreddits = mbc['subreddits']
         @conditions = mbc['conditions']
       end
+      @conditions = process_conditions(@conditions)
       @timestamps = Hashie::Mash.new
       login_moderator
     end
@@ -145,20 +147,20 @@ module Modbot
     def test_condition(test_item, condition)
       case condition.query 
       when :matches
-        test = Regexp.union(condition.what)#move up into condition processing, i.e. do once instead of each time
-        test =~ test_item
+        #test = Regexp.union(condition.what)#move up into condition processing, i.e. do once instead of each time
+        condition.what =~ test_item
         if test.nil?
           false
         else
           true
         end
       when :contains
-        tt = []
-        condition.what.each do |t|
-          tt << Regexp.new(Regexp.escape(t))
-        end
-        test = Regexp.union tt
-        test =~ test_item
+        #tt = []
+        #condition.what.each do |t|
+        #  tt << Regexp.new(Regexp.escape(t))
+        #end
+        #test = Regexp.union tt
+        condition.what =~ test_item
         if test.nil?
           false
         else

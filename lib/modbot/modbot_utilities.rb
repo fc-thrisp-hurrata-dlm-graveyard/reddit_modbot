@@ -50,16 +50,39 @@ module ModbotUtilities
     z
   end
 
-  #returns conditions put into this instance
-  def current_conditions
+  #returns conditions with what processed as regex
+  def process_conditions(what_conditions)
     z = []
-    conditions.each do |x|
+    what_conditions.each do |x|
       h = Hashie::Mash.new
       h.subject, h.attribute, h.query, h.action = x[0].to_sym, x[1].to_sym, x[2].to_sym, x[4].to_sym
       h.what = process_what(x[3])
+      case h.query
+      when :matches
+        h.what = Regexp.union(h.what)
+      when :contains
+        tt = []
+        h.what.each do |t|
+          tt << Regexp.new(Regexp.escape(t))
+        end
+        h.what = Regexp.union tt
+      end
       z << h
     end
     z
+  end
+
+  #returns conditions put into this instance
+  def current_conditions
+    @conditions
+    #z = []
+    #conditions.each do |x|
+    #  h = Hashie::Mash.new
+    #  h.subject, h.attribute, h.query, h.action = x[0].to_sym, x[1].to_sym, x[2].to_sym, x[4].to_sym
+    #  h.what = process_what(x[3])
+    #  z << h
+    #end
+    #z
   end
   
   def current_conditions_bysubject(subject)

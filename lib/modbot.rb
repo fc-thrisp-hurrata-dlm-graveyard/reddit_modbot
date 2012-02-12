@@ -159,10 +159,9 @@ module Modbot
         test = test_item > condition.what
       when :is_less_than
         test = test_item < condition.what
-      else
-        test = false 
       end
-      @l.info "#{test_item} ::: #{condition.query} ::: #{test}"
+      #test
+      @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{test}"
     end
 
     def process_results(results_set)

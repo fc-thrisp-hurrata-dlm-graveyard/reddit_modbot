@@ -17,7 +17,7 @@ module ModbotUtilities
     @uh
   end
 
-  def recent_spam
+  def recent_spams
     @recent_spams
   end
   

@@ -50,7 +50,8 @@ module Modbot
       else
         @l.info "#{results.count} new items from #{which_q} to check"
       end
-     self.send('recent_' + which_q + 's') = results
+     which_recent = self.method('recent_' + which_q + 's')
+     which_recent.call = results
     end
 
     def perform_action(action, item)
@@ -171,7 +172,7 @@ module Modbot
     #see if time has changed on newest item, filter for only items newer than last check
     def compare_times(results, which_q)
       if @timestamps.send(which_q.to_sym).nil?
-        @timestamps(which_q +'_last') = results[0].timestamp
+        @timestamps[(which_q +'_last')] = results[0].timestamp
         results = results
       else
         what_time = (which_q + '_last').to_sym

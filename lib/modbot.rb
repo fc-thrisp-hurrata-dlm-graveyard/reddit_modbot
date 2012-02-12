@@ -35,6 +35,7 @@ module Modbot
         @conditions = mbc['conditions']
       end
       @conditions = process_conditions(@conditions)
+      @subreddits = process_subreddits(@subreddits)
       @timestamps = Hashie::Mash.new
       login_moderator
     end
@@ -99,7 +100,7 @@ module Modbot
 
     #Checks an item against a set of conditions.
     def check_conditions(item)
-      conditions = current_conditions_bysubject(item.kind.to_sym)
+      conditions = relevant_conditions(item.kind.to_sym)
       conditions.each do |c| #unless conditions.empty? 
         check_condition(c, item)
         @l.info "condition #{[c.subject, c.attribute, c.query, c.what, c.action]} checked"

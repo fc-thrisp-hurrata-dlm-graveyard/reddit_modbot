@@ -21,6 +21,10 @@ module ModbotUtilities
     @conditions
   end
 
+  def current_subreddits
+    @subreddits
+  end
+
   def timestamps_top 
     @timestamps
   end
@@ -43,10 +47,10 @@ module ModbotUtilities
     c.compact.flatten.uniq
   end
 
-  #returns subreddits put into this instance
-  def current_subreddits
+  #process subreddits on intialize
+  def process_subreddits(what_subreddits)
     z = []
-    self.subreddits.each do |x|
+    what_subreddits.each do |x|
       h = Hashie::Mash.new
       h.name, h.report_limit, h.spam_limit, h.submission_limit = x[0], x[1], x[2], x[3]
       z << h
@@ -54,7 +58,7 @@ module ModbotUtilities
     z
   end
 
-  #returns conditions with what processed as regex
+  #process conditions on intialize
   def process_conditions(what_conditions)
     z = []
     what_conditions.each do |x|
@@ -76,7 +80,7 @@ module ModbotUtilities
     z
   end
   
-  def current_conditions_bysubject(subject)
+  def relevant_conditions(subject)
     current_conditions.select { |x| x.subject == subject } 
   end
 

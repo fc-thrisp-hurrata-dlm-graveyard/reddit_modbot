@@ -41,7 +41,7 @@ module Modbot
     end
 
     def to_s
-      "reddit_modbot for moderator #{m_modrname}"
+      "reddit_modbot instance for moderator #{m_modrname}"
     end
 
     def login_moderator
@@ -154,7 +154,7 @@ module Modbot
         test = test_item < condition.what
       end
       if test.kind_of?(Integer) || test == true
-        item.verdict << item.action
+        item.verdict << condition.action
         test_result = true
       elsif test.nil? || test == false
         item.verdict << :fail

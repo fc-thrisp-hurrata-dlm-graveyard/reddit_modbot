@@ -155,12 +155,14 @@ module Modbot
       end
       if test.kind_of?(Integer) || test == true
         item.verdict << item.action
+        test_result = true
       elsif test.nil? || test == false
-        item.verdict << :fail 
+        item.verdict << :fail
+        test_result = false 
       else
-        test = :fail
+        test_result = "failure"
       end
-      @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{test}"
+      @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{test_result}"
     end
 
     def process_results(results_set)

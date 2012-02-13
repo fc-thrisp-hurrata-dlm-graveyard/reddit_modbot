@@ -11,12 +11,12 @@ Use Modbot::ModBot.new instance passing in moderator, subreddits, and conditions
 OR specify a yaml config file to be read (reads from root of project or irb/pry 
 instance -- still needs tweaking)
 
-    Modbot::ModBot.new(:config_file)
+    Modbot::ModBot.new(:pass_config)
 
-    Modbot::ModBot.new(:pass_param,
+    Modbot::ModBot.new(:pass_arg,
                        moderator = {'name' => '', 'password' => ''},
                        subreddits = [[], [], []]
-                       conditions = [ [], [], []])
+                       conditions = [ [], [], []])  # this is the default
 
 - Moderator: As a hash { 'name' => '', 'password' => ''}, or see config file example.
 

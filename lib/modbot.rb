@@ -18,17 +18,17 @@ module Modbot
 
     attr_accessor :moderator, :subreddits, :conditions
 
-    def initialize(config = :pass_param, moderator = {},subreddits = [], conditions = [])
+    def initialize(config = :pass_arg, moderator = {}, subreddits = [], conditions = [])
       @l = Logger.new(STDOUT)
       @r = Mechanize.new{ |agent| agent.user_agent_alias = 'Mac Safari' }
       #@r.post_connect_hooks << Proc.new { sleep 2 }
       @r.history_added = Proc.new {sleep 2}
-      if config == :pass_param
+      if config == :pass_arg
         @m_modrname = moderator['name']
         @m_password = moderator['pass']
         @subreddits = subreddits
         @conditions = conditions
-      elsif config == :config_file
+      elsif config == :pass_config
         mbc = YAML::load(File.open("modbot.yml")) #how to find root and where should this be or path specification        
         @m_modrname, @m_password = mbc['moderator']['name'], mbc['moderator']['pass']
         @subreddits = mbc['subreddits']
@@ -40,25 +40,28 @@ module Modbot
       login_moderator
     end
 
+    def to_s
+      "reddit_modbot for moderator #{m_modrname}"
+    end
+
     def login_moderator
       self.login(m_modrname,m_password)
-      x = self.get_current_user(m_modrname)
-      @uh = x.uh
+      @uh = self.get_current_user(m_modrname).uh
     end
 
     #Checks reported items for any matching conditions: report, spam, or submission
     def fetch_results(which_q, subreddit, limit)
-      which_to = self.method('get_reddit_' + which_q + 's')
+      which_to = self.method("get_reddit_#{which_q}s")
       results = which_to.call(subreddit.name, limit) 
       @l.info "results fetched #{results.count} from #{which_q}"
       results = compare_times(results, which_q)
       if results.empty?
         @l.info "nothing to report, #{which_q} is empty"
-        subreddit[(which_q + '_recent')] = [] #stopped working for some reason
+        subreddit["#{which_q}_recent"] = [] #stopped working for some reason
       else
         @l.info "#{results.count} new items from #{which_q} to check"
-        check_alerts( (which_q + '_limit').to_sym, results.count, subreddit)
-        subreddit[(which_q + '_recent')] = results#stopped working for some reason, outside of loop
+        check_alerts("#{which_q}_limit".to_sym, results.count, subreddit)
+        subreddit["#{which_q}_recent"] = results#stopped working for some reason, outside of loop
       end
     end
 
@@ -67,9 +70,9 @@ module Modbot
       if @timestamps.send(which_q.to_sym).nil?
         @l.info "this is the most recent set of results for #{which_q}"
         if results.empty?
-           @timestamps[(which_q +'_last')] = Time.now.to_f.round(3)
+           @timestamps["#{which_q}_last"] = Time.now.to_f.round(3)
         else
-           @timestamps[(which_q +'_last')] = results[0].timestamp
+           @timestamps["#{which_q}_last"] = results[0].timestamp
         end 
         results = results
       else
@@ -114,7 +117,7 @@ module Modbot
         i = item.author[0]
       when :title
         i = item.title
-      when :body# should be able to take 
+      when :body
         i = item.body
       when :domain
         i = URI(item.url).host
@@ -151,7 +154,7 @@ module Modbot
         test = test_item < condition.what
       end
       if test.kind_of?(Integer) || test == true
-        item.verdict << :pass
+        item.verdict << item.action
       elsif test.nil? || test == false
         item.verdict << :fail 
       else
@@ -201,18 +204,21 @@ module Modbot
     end
    
     #make less clumsy
-    def check_subreddit(for_what)#["spam", "report", "submission"] or any combo of
+    def manage_subreddit(subreddit, fw, limit)
+      fw.map{ |f| self.fetch_results(f, subreddit, limit) }
+      fw.map{ |f| self.check_results(subreddit["#{f}_recent"] }
+      fw.map{ |f| self.process_results(subreddit["#{f}_recent"] } 
+    end
+
+    def manage_subreddits(for_what, limit)#["spam", "report", "submission"] or any combo of
       
       current_subreddits.each do |s|
-        for_what.each do |fw|
-          #fetch_results(fw, s)
-          @l.info "fetched results #{fw} for #{s.name}" 
-          #check_results(s[(fw + '_recent')]
-          @l.info "checked results #{s.name} #{fw}_recent"
-          #process_results(s[(fw + '_recent')]
-          @l.info "processed results #{s.name} #{fw}_recent"
-        end
+        manage_subreddit(s, for_what, limit)
       end
+
+      #@l.info "fetched results #{fw} for #{s.name}" 
+      #@l.info "checked results #{s.name} #{fw}_recent"
+      #@l.info "processed results #{s.name} #{fw}_recent"
         
     end
 

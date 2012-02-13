@@ -206,8 +206,8 @@ module Modbot
     #make less clumsy
     def manage_subreddit(subreddit, fw, limit)
       fw.map{ |f| self.fetch_results(f, subreddit, limit) }
-      fw.map{ |f| self.check_results(subreddit["#{f}_recent"] }
-      fw.map{ |f| self.process_results(subreddit["#{f}_recent"] } 
+      fw.map{ |f| self.check_results(subreddit["#{f}_recent"]) }
+      fw.map{ |f| self.process_results(subreddit["#{f}_recent"]) } 
     end
 
     def manage_subreddits(for_what, limit)#["spam", "report", "submission"] or any combo of

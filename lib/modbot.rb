@@ -181,6 +181,7 @@ module Modbot
             verdict >= 1 ? action = :approve : action = :remove
           end
           v.score = verdict
+          @l.info "#{v.verdict} yields a score of #{v.score} for item #{v.fullid}"
           perform_action(action, v)
         end
       end

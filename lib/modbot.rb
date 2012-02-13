@@ -168,8 +168,9 @@ module Modbot
     def process_results(results_set)
       results_set.each do |v|
         if v.verdict.empty?
+          @l.info "Not enough information to make a decision on this item"
         else
-          verdict = v.verdict.count {|x| x == :pass }.to_f / v.verdict.count {|x| x == :fail }.to_f
+          verdict = v.verdict.count {|x| x == :approve }.to_f / v.verdict.count {|x| x == :remove }.to_f
           if verdict.infinite?
             verdict = 1
             action = v.action

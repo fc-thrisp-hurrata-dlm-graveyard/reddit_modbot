@@ -37,7 +37,7 @@ module ModbotUtilities
     elsif processing.kind_of?(Integer)
       processing = processing
     else
-      processing = [] << processing
+      processing = [] << processing # processing = [processing]
       clean_up(processing)
     end
   end

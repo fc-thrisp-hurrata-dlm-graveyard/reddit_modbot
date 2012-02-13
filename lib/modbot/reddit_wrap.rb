@@ -48,7 +48,7 @@ module RedditWrap
   end
 
   #http://www.reddit.com/message/moderator/.json
-  def send_redit_message(user, subject, text)#or group
+  def send_reddit_message(user, subject, text)#or group
     @r.post 'http://www.reddit.com/api/compose', 
             'to'=> user,
             'subject'=> subject,

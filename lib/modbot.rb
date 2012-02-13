@@ -88,8 +88,9 @@ module Modbot
     #Checks for items with more reports than the subreddit's threshold.
     def check_alerts(subreddit_alert, results_count, subreddit)
       if subreddit.send(subreddit_alert) <= results_count
-        #perform_alert
-        @l.info "alert : #{results_count} exceed #{subreddit.send(subreddit_alert)} items for #{subreddit.name}"
+        message = "alert : #{results_count} exceed #{subreddit.send(subreddit_alert)} items for #{subreddit.name}"
+        perform_alert(:conditions, m_modrname, message)
+        @l.info message
       end
     end
 
@@ -139,7 +140,7 @@ module Modbot
       when :min_combined_karma
         i = (item.author[3] + item.author[4])
       end
-      @l.info "#{i} to be checked against #{condition.attribute}"
+      @l.info "#{i} to be checked if #{condition.query} #{condition.attribute}"
       test_condition(condition, item, i)
     end
              
@@ -147,11 +148,11 @@ module Modbot
     def test_condition(condition, item, test_item)
       case condition.query 
       when :matches || :contains
-        test = condition.what =~ test_item
+        test = ( condition.what =~ test_item )
       when :is_greater_than
-        test = test_item > condition.what
+        test = ( test_item > condition.what )
       when :is_less_than
-        test = test_item < condition.what
+        test = ( test_item < condition.what )
       end
       if test.kind_of?(Integer) || test == true
         item.verdict << condition.action
@@ -162,13 +163,17 @@ module Modbot
       else
         test_result = "failure"
       end
-      @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{test_result}"
+      @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{test_result}, recommend #{condition.action}"
     end
 
     def process_results(results_set)
       results_set.each do |v|
         if v.verdict.empty?
           @l.info "Not enough information to make a decision on this item"
+        elsif v.verdict.count {|x| x == :alert } >= 1
+          v.score = v.verdict.count {|x| x == :alert }
+          perform_action(:alert, v)
+          @l.info "#{v.verdict} yields score #{v.score}, and triggers alert for #{v.fullid}"
         else
           verdict = v.verdict.count {|x| x == :approve }.to_f / v.verdict.count {|x| x == :remove }.to_f
           if verdict.infinite?
@@ -190,7 +195,7 @@ module Modbot
     def perform_action(action, item)
       case action
       when :inconclusive
-        @l.info "not enough data to remove or approve this item"
+        @l.info "not enough data to approve, remove, or call alert for this item"
       when :approve
         self.approve(item.fullid)
         @l.info "approved #{item.fullid}" # better description needed
@@ -198,13 +203,21 @@ module Modbot
         self.remove(item.fullid)
         @l.info "removed #{item.fullid}" # better description needed
       when :alert
-        self.perform_alert([action.to_s, item])
+        self.perform_alert(:item, "Alert triggered for #{item.kind} #{item.fullid} :: #{item.author} :: #{item.inspect}")
       else
         @l.info "Oddly, nothing to perform but perform action triggered"
       end
     end
 
-    def perform_alert(contents = [])
+    def perform_alert(alert_type, who = @m_modrname,  contents = [])
+      case :alert_type
+      when :item
+        send_reddit_message(m_modrname, "item alert - #{self.to_s}", contents)
+      when :conditions
+        send_reddit_message(m_modrname, "conditions alert - #{self.to_s}", contents)
+      when :other_reddit
+        #send_reddit_message(who, "alert from - #{self.to_s}", contents)
+      end
     end
    
     #make less clumsy

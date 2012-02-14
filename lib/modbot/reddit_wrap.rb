@@ -25,7 +25,7 @@ module RedditWrap
   #https://ssl.reddit.com/api/login/
   def login(user,password)
     begin
-      @internet_agent.post 'https://ssl.reddit.com/api/login/' + user, 
+      @internet_agent.post "https://ssl.reddit.com/api/login/#{user}", 
           'passwd' => password,
           'user' =>  user, #appears required not redundant
           'type' => 'json'
@@ -36,19 +36,19 @@ module RedditWrap
 
   #http://www.reddit.com/r/#{SUBREDDIT}/new.json
   def get_reddit_submissions(reddit_name, limit = 50)
-    route = 'http://www.reddit.com/r/' + reddit_name + '/new.json'
+    route = "http://www.reddit.com/r/#{reddit_name}/new.json"
     q_parse(route, limit)
   end
 
   #http://www.reddit.com/r/#{SUBREDDIT}/about/reports/.json
   def get_reddit_reports(reddit_name, limit = 25)
-    route = 'http://www.reddit.com/r/' + reddit_name + '/about/reports/.json'
+    route = "http://www.reddit.com/r/#{reddit_name}/about/reports/.json"
     q_parse(route, limit)
   end
 
   #http://www.reddit.com/r/#{SUBREDDIT}/about/spam/.json
   def get_reddit_spams(reddit_name, limit = 50)
-    route = 'http://www.reddit.com/r/'+ reddit_name + '/about/spam/.json'
+    route = "http://www.reddit.com/r/#{reddit_name}/about/spam/.json"
     q_parse(route, limit)
   end
 
@@ -64,7 +64,7 @@ module RedditWrap
 
   #http://www.reddit.com/user/#{USER_NAME}/about/.json# users other than the current mod
   def reddit_user(name)
-    x = @internet_agent.get 'http://www.reddit.com/user/' + name + '/about.json'
+    x = @internet_agent.get "http://www.reddit.com/user/#{name}/about.json"
     x = JSON.parse(x.body)
     y = Hashie::Mash.new
     y.name, y.created, y.link_karma, y.comment_karma = x['data']['name'], x['data']['created'], x['data']['link_karma'], x['data']['comment_karma']

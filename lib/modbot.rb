@@ -117,21 +117,21 @@ module Modbot
 
     #fetch results for this agent
     def fetch
-      current_subreddits.each so |s|
+      current_subreddits.each do |s|
         [:report, :spam, :submission].each { |x| fetch_results(x, s) }
       end
     end
  
     #check the current or passed(hmmmm, tbd) set of results for this agent 
     def check
-      current_subreddits.each so |s|
+      current_subreddits.each do |s|
         [:report, :spam, :submission].each { |x| check_results(s.name["#{x}_recent"]) }
       end
     end
 
     #check the current or passed(hmmmm, tbd) set of results
     def process
-      current_subreddits.each so |s|
+      current_subreddits.each do |s|
         [:report, :spam, :submission].each { |x| process_results(s.name["#{x}_recent"]) }
       end
     end

@@ -125,14 +125,14 @@ module Modbot
     #check the current or passed(hmmmm, tbd) set of results for this agent 
     def check
       current_subreddits.each do |s|
-        [:report, :spam, :submission].each { |x| check_results(s.name["#{x}_recent"]) }
+        [:report, :spam, :submission].each { |x| check_results(s["#{x}_recent"]) }
       end
     end
 
     #check the current or passed(hmmmm, tbd) set of results
     def process
       current_subreddits.each do |s|
-        [:report, :spam, :submission].each { |x| process_results(s.name["#{x}_recent"]) }
+        [:report, :spam, :submission].each { |x| process_results(s["#{x}_recent"]) }
       end
     end
 

@@ -11,7 +11,7 @@ module ModbotCheck
 
   #Check a results set
   def check_results(results_set)
-    results_set.each { |i| check_conditions(i) }
+    results_set.each { |i| check_conditions(i) } unless results_set.empty?
     @l.info "all conditions checked from this result set"
   end
 

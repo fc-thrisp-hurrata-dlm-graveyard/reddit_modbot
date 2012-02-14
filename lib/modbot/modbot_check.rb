@@ -1,0 +1,97 @@
+module ModbotCheck
+
+  #Checks for items with more reports than the subreddit's threshold.
+  def check_alerts(subreddit_alert, results_count, subreddit)
+    if subreddit.send(subreddit_alert) <= results_count
+      message = "alert : #{results_count} exceed #{subreddit.send(subreddit_alert)} items for #{subreddit.name}"
+      perform_alert(:conditions, m_modrname, message)
+      @l.info message
+    end
+  end
+
+  #Check a results set
+  def check_results(results_set)
+    results_set.each { |i| check_conditions(i) }
+    @l.info "all conditions checked from this result set"
+  end
+
+  #Checks an item against a set of (relevant) conditions.
+  def check_conditions(item)
+    conditions = relevant_conditions(item.kind.to_sym)
+    conditions.each do |c| #unless conditions.empty? 
+      check_condition(c, item)
+      @l.info "condition #{[c.subject, c.attribute, c.query, c.what, c.action]} checked"
+    end
+  end
+
+  #Checks an item against a single condition.
+  def check_condition(condition, item)
+    #refactor with some sort of hash table
+    #available_conditions = { author: item.author,
+    #                          title: item.title, 
+    #                          body: item.body, 
+    #                          domain: (URI(item.url).host),
+    #                          self_post: item.is_self, 
+    #                          account_age: item.author[2],
+    #                          link_karma: item.author[3],
+    #                          comment_karma: item.author[4],
+    #                          combined_karma: (item.author[3] + item.author[4])}
+    case condition.attribute
+    when :author
+      i = item.author[0]
+    when :title
+      i = item.title
+    when :body
+      i = item.body
+    when :domain
+      i = URI(item.url).host
+    #when :url #not even close, will take some tweaking, do not use right now
+    #  i = []
+    #  item.url.each do |ii|
+    #    ii = URI(ii)
+    #    i << [ii.host, ii.path].reject { |s| s.empty? }
+    #  end
+    #  i.flatten
+    when :self_post
+      i = item.is_self
+    when :account_age
+      i = item.author[2]
+    when :link_karma
+      i = item.author[3]
+    when :comment_karma
+      i = item.author[4]
+    when :combined_karma
+      i = (item.author[3] + item.author[4])
+    end
+    @l.info "#{i} to be checked if #{condition.query} #{condition.attribute}"
+    test_condition(condition, item, i)
+  end
+             
+  #tests an item against a condition, returns true or false
+  def test_condition(condition, item, test_item)
+    case condition.query 
+    when :matches || :contains
+      test = ( condition.what =~ test_item )
+    when :is_greater_than
+      test = ( test_item > condition.what )
+    when :is_less_than
+      test = ( test_item < condition.what )
+    end
+    process_verdict(test, condition)
+  end
+
+  #processes an outcome of a test, stores in the item
+  def process_verdict(test_outcome, condition)
+    if test_outcome.kind_of?(Integer) || test_outcome == true
+      item.verdict << condition.action
+      test_result = true
+    elsif test_outcome.nil? || test_outcome == false
+      item.verdict << :fail
+      test_result = false 
+    else
+      test_result = "failure"
+    end
+    @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{test_result}, recommend #{condition.action}"
+  end
+
+end

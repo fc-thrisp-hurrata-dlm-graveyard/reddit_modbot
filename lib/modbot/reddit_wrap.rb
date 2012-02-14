@@ -1,3 +1,8 @@
+# wrapper provides interface to
+# moderator login, user information, information queues (reports, spam, and new submissions here),
+# approve, remove, send messages
+# ? how to structure here and in modbot for a standardized interface between ?   
+
 #ad hoc reddit api wrapper
 require 'json'
 module RedditWrap
@@ -10,7 +15,7 @@ module RedditWrap
   #http://www.reddit.com/user/#{USER_NAME}/about/.json
   def get_current_user(user)
     h = Hashie::Mash.new
-    x = @r.get 'http://www.reddit.com/user/' + user + '/about/.json'
+    x = @internet_agent.get 'http://www.reddit.com/user/' + user + '/about/.json'
     x = JSON.parse(x.body)
     h.user_name = x['data']['name']
     h.uh = x['data']['modhash']
@@ -20,12 +25,12 @@ module RedditWrap
   #https://ssl.reddit.com/api/login/
   def login(user,password)
     begin
-      @r.post 'https://ssl.reddit.com/api/login/' + user, 
+      @internet_agent.post 'https://ssl.reddit.com/api/login/' + user, 
           'passwd' => password,
           'user' =>  user, #appears required not redundant
           'type' => 'json'
     rescue
-      #log 'unable to log in using the provided credentials'
+      @l.info "unable to login to reddit with the provided credentials"
     end
   end
 
@@ -47,18 +52,19 @@ module RedditWrap
     q_parse(route, limit)
   end
 
-  #http://www.reddit.com/message/moderator/.json
-  def send_reddit_message(user, subject, text)#or group
-    @r.post 'http://www.reddit.com/api/compose', 
+  #http://www.reddit.com/api/compose/.json
+  def send_reddit_message(user, subject, text)
+    @internet_agent.post 'http://www.reddit.com/api/compose', 
             'to'=> user,
             'subject'=> subject,
             'text'=> text, 
             'uh' => @uh,
             'api_type' => 'json'
+  end
 
-  #http://www.reddit.com/user/#{USER_NAME}/about/.json
+  #http://www.reddit.com/user/#{USER_NAME}/about/.json# users other than the current mod
   def reddit_user(name)
-    x = @r.get 'http://www.reddit.com/user/' + name + '/about.json'
+    x = @internet_agent.get 'http://www.reddit.com/user/' + name + '/about.json'
     x = JSON.parse(x.body)
     y = [] 
     y << x['data']['name']
@@ -70,17 +76,17 @@ module RedditWrap
     y
   end
 
-  #http://www.reddit.com/api/approve
+  #http://www.reddit.com/api/approve/.json
   def approve(id)
-    @r.post 'http://www.reddit.com/api/approve', 
+    @internet_agent.post 'http://www.reddit.com/api/approve', 
             'id' => id , 
             'uh' => @uh,
             'api_type' => 'json'
   end
 
-  #http://www.reddit.com/remove
+  #http://www.reddit.com/remove/.json
   def remove(id)
-    @r.post 'http://www.reddit.com/api/remove', 
+    @internet_agent.post 'http://www.reddit.com/api/remove', 
             'id' => id , 
             'uh' => @uh,
             'api_type' => 'json'
@@ -88,10 +94,10 @@ module RedditWrap
 
   #misc utility methods
   def q_parse(route, limit)
-    if limit == "none" 
-      x = @r.get route
+    if limit == :none 
+      x = @internet_agent.get route
     else 
-      x = @r.get route, 'limit' => limit
+      x = @internet_agent.get route, 'limit' => limit
     end
     y = JSON.parse(x.body)['data']['children']
     z = []

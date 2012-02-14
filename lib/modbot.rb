@@ -138,13 +138,13 @@ module Modbot
 
     #handle one specific subreddit 
     def manage_subreddit(for_what = [:report, :spam, :submission], subreddit)
-      if #subreddit not part of this instance subreddits
+      #if #subreddit not part of this instance subreddits
         #message that this
-      else 
-        for_what.each { |f| self.fetch_results(f, subreddit) }
-        for_what.each { |f| self.check_results(subreddit["#{f}_recent"]) }
-        for_what.each { |f| self.process_results(subreddit["#{f}_recent"]) }
-      end 
+      #else 
+      #  for_what.each { |f| self.fetch_results(f, subreddit) }
+      #  for_what.each { |f| self.check_results(subreddit["#{f}_recent"]) }
+      #  for_what.each { |f| self.process_results(subreddit["#{f}_recent"]) }
+      #end 
     end
 
     def manage_subreddits

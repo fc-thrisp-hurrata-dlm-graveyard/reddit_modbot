@@ -4,15 +4,15 @@ module ModbotFetch
     def fetch_results(which_q, subreddit)
       which_to = self.method("get_reddit_#{which_q}s")
       results = which_to.call(subreddit.name, subreddit.item_limit) 
-      @l.info "results fetched #{results.count} from #{which_q}"
+      @l.info "#{results.count} results from #{which_q}"
       results = compare_times(which_q, results)
       if results.empty?
-        @l.info "nothing to report, #{which_q} is empty"
-        subreddit["#{which_q}_recent"] = [] 
+        subreddit["#{which_q}_recent"] = []
+        @l.info "nothing to report, #{which_q} is empty" 
       else
-        @l.info "#{results.count} new items from #{which_q} to check"
         check_alerts("#{which_q}_threshold".to_sym, results.count, subreddit)
         subreddit["#{which_q}_recent"] = results
+         @l.info "#{results.count} new items from #{which_q} to check"
       end
     end
 

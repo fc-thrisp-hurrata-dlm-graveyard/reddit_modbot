@@ -15,7 +15,7 @@ module RedditWrap
   #http://www.reddit.com/user/#{USER_NAME}/about/.json
   def get_current_user(user)
     h = Hashie::Mash.new
-    x = @internet_agent.get 'http://www.reddit.com/user/' + user + '/about/.json'
+    x = @internet_agent.get "http://www.reddit.com/user/#{user}/about/.json"
     x = JSON.parse(x.body)
     h.user_name = x['data']['name']
     h.uh = x['data']['modhash']
@@ -66,13 +66,10 @@ module RedditWrap
   def reddit_user(name)
     x = @internet_agent.get 'http://www.reddit.com/user/' + name + '/about.json'
     x = JSON.parse(x.body)
-    y = [] 
-    y << x['data']['name']
-    y << x['data']['created']
-    y << user_age( x['data']['created'] )
-    y << x['data']['link_karma']
-    y << x['data']['comment_karma']
-    y << (x['data']['link_karma'].to_f / x['data']['comment_karma'].to_f).round(3)
+    y = Hashie::Mash.new
+    y.name, y.created, y.link_karma, y.comment_karma = x['data']['name'], x['data']['created'], x['data']['link_karma'], x['data']['comment_karma']
+    y.user_age = user_age( x['data']['created'] )
+    y.karma_ratio = (x['data']['link_karma'].to_f / x['data']['comment_karma'].to_f).round(3)
     y
   end
 

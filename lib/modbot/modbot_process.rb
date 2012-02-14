@@ -7,10 +7,11 @@ module ModbotProcess
         @l.info "Not enough information to make a decision on this item"
       else
         verdict = item.verdict.count {|x| x == :approve }.to_f / item.verdict.count {|x| x == :remove }.to_f
-        if verdict.infinite?
+        case verdict
+        when verdict.infinite?
           verdict = 1
           action = v.action
-        elsif verdict.nan?
+        when verdict.nan?
           verdict = 0
           action = :inconclusive
         else

@@ -66,32 +66,32 @@ module ModbotCheck
     @l.info "#{i} to be checked if #{condition.query} #{condition.attribute}"
     test_condition(condition, item, i)
   end
-             
-  #tests an item against a condition, returns true or false
-  def test_condition(condition, item, test_item)
-    case condition.query 
-    when :matches || :contains
-      test = ( condition.what =~ test_item )
-    when :is_greater_than
-      test = ( test_item > condition.what )
-    when :is_less_than
-      test = ( test_item < condition.what )
-    end
-    process_verdict(test, condition)
-  end
-
+        
   #processes an outcome of a test, stores in the item
-  def process_verdict(test_outcome, condition)
-    if test_outcome.kind_of?(Integer) || test_outcome == true
+  def test_condition(condition, item, test_item)
+    test = query_test_condition(condition, test_item)
+    if test.kind_of?(Integer) || test == true
       item.verdict << condition.action
       test_result = true
-    elsif test_outcome.nil? || test_outcome == false
+    elsif test.nil? || test == false
       item.verdict << :fail
       test_result = false 
     else
       test_result = "failure"
     end
     @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{test_result}, recommend #{condition.action}"
+  end
+     
+  #tests an item against a condition, returns true or false
+  def query_test_condition(condition, test_item)
+    case condition.query 
+    when :matches || :contains
+      return ( condition.what =~ test_item )
+    when :is_greater_than
+      return ( test_item > condition.what )
+    when :is_less_than
+      return ( test_item < condition.what )
+    end
   end
 
 end

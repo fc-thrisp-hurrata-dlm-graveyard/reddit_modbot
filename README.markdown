@@ -50,3 +50,11 @@ Think about
   - wrappers modularization, e.g. use a modbot instance for a specific api, decouple from reddit and allow numerous api types
 
   - condition weighting; certain conditions can take priority for remove/approve
+
+notes 
+    #main(fetch       -- results,
+    #     compare     -- times,
+    #     check       -- items/conditions,
+    #     test        -- item what / condition attribute,
+    #     process     -- check item verdicts
+    #     perform     -- approve/remove/alert moderator )

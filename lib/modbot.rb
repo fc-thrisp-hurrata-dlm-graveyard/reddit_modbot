@@ -4,18 +4,13 @@ require "modbot/modbot_fetch"
 require "modbot/modbot_check"
 require "modbot/modbot_process"
 require "modbot/modbot_utilities"
+require "logger"
 
 module Modbot
 
-  class ModBot
-
-    #main(fetch       -- results,
-    #     compare     -- times,
-    #     check       -- items/conditions,
-    #     test        -- item what / condition attribute,
-    #     process     -- check item verdicts
-    #     perform     -- approve/remove/alert moderator )
-
+  class Agent
+    
+    #autoload
     include RedditWrap
     include ModbotFetch
     include ModbotCheck 
@@ -41,8 +36,8 @@ module Modbot
       @conditions = initialize_conditions(@conditions)
       @subreddits = initialize_subreddits(@subreddits)
       @timestamps = Hashie::Mash.new
-      @l.info "#{self.to_s} intialized with #{@conditions} for #{@subreddits}"
       login_moderator
+      #@l.info "#{self.to_s} intialized with #{@conditions} for #{@subreddits}"
     end
 
     def to_s
@@ -73,7 +68,7 @@ module Modbot
       @subreddits
     end
 
-    def timestamps_top 
+    def current_timestamps
       @timestamps
     end
 
@@ -120,15 +115,42 @@ module Modbot
       @uh = get_current_user(m_modrname).uh
     end
 
-    #make less clumsy
-    def manage_subreddit(for_what, subreddit)
-      for_what.each { |f| self.fetch_results(f, subreddit) }
-      for_what { |f| self.check_results(subreddit["#{f}_recent"]) }
-      for_what { |f| self.process_results(subreddit["#{f}_recent"]) } 
+    #fetch results for this agent
+    def fetch
+      current_subreddits.each so |s|
+        [:report, :spam, :submission].each { |x| fetch_results(x, s) }
+      end
+    end
+ 
+    #check the current or passed(hmmmm, tbd) set of results for this agent 
+    def check
+      current_subreddits.each so |s|
+        [:report, :spam, :submission].each { |x| check_results(s.name["#{x}_recent"]) }
+      end
     end
 
-    def manage_subreddits(for_what)#[:spam, :report, :submission] or any combo of
-      current_subreddits.each { |s| manage_subreddit(for_what, s) }        
+    #check the current or passed(hmmmm, tbd) set of results
+    def process
+      current_subreddits.each so |s|
+        [:report, :spam, :submission].each { |x| process_results(s.name["#{x}_recent"]) }
+      end
+    end
+
+    #handle one specific subreddit 
+    def manage_subreddit(for_what = [:report, :spam, :submission], subreddit)
+      if #subreddit not part of this instance subreddits
+        #message that this
+      else 
+        for_what.each { |f| self.fetch_results(f, subreddit) }
+        for_what.each { |f| self.check_results(subreddit["#{f}_recent"]) }
+        for_what.each { |f| self.process_results(subreddit["#{f}_recent"]) }
+      end 
+    end
+
+    def manage_subreddits
+      fetch
+      check
+      process       
     end
 
   end

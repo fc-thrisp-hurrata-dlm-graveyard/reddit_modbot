@@ -42,7 +42,6 @@ module Modbot
 
     def to_s
       "reddit_modbot instance for moderator #@m_modrname"
-      self.inspect
     end
 
     def internet_agent

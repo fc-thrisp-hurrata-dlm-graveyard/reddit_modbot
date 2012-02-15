@@ -7,7 +7,7 @@ module ModbotProcess
         @l.info "Not enough information to make a decision on this item"
       else
         verdict = score(item.verdict, :approve) / score(item.verdict, :remove)
-        score_verdict(item, verdict)
+        action = score_verdict(item, verdict)
         perform_action(action, item)
       end
     end

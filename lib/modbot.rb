@@ -95,11 +95,11 @@ module Modbot
       what_conditions.each do |x|
         h = Hashie::Mash.new
         h.subject, h.attribute, h.query, h.action = x[0].to_sym, x[1].to_sym, x[2].to_sym, x[4].to_sym
-        h.weight = x[5] || 1 
+        h.weight = x[5] || 1
         h.what = process_what(x[3])
         case h.query
         when :matches
-          h.what = Regexp.new(Regexp.escape(h.what))
+          h.what = Regexp.union(h.what)
         when :contains
           tt = []
           h.what.each do |t|

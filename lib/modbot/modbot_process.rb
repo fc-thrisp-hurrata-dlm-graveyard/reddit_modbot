@@ -38,7 +38,7 @@ module ModbotProcess
     perform_action(:alert, item) if item.verdict.count {|x| x == :alert } >= 1 
   end
 
-  def perform_alert(who=self.m_modrname, alert_type, contents=[])
+  def perform_alert(who=self.m_modrname, alert_type, contents)
     send_reddit_message(who, "#{alert_type} alert from #{self.to_s}", contents)
   end 
        

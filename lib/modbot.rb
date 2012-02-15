@@ -99,7 +99,7 @@ module Modbot
         h.what = process_what(x[3])
         case h.query
         when :matches
-          h.what = Regexp.union(Regexp.new(Regexp.escape(h.what)))
+          h.what = Regexp.new(Regexp.escape(h.what))
         when :contains
           tt = []
           h.what.each do |t|

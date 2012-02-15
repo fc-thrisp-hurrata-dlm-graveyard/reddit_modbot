@@ -1,4 +1,5 @@
 require "modbot/version"
+#require "modbot/modbot"
 require "modbot/reddit_wrap"
 require "modbot/modbot_fetch"
 require "modbot/modbot_check"
@@ -16,6 +17,8 @@ module Modbot
     include ModbotUtilities
 
     attr_accessor :moderator, :subreddits, :conditions
+
+    QUEUES = [:report, :spam, :submission]
 
     def initialize(config = :pass_arg, moderator = {}, subreddits = [], conditions = [])
       @l = Logger.new(STDOUT)
@@ -35,11 +38,11 @@ module Modbot
       @subreddits = initialize_subreddits(@subreddits)
       @timestamps = Hashie::Mash.new
       login_moderator
-      #@l.info "#{self.to_s} intialized with #{@conditions} for #{@subreddits}"
     end
 
     def to_s
       "reddit_modbot instance for moderator #@m_modrname"
+      self.inspect
     end
 
     def internet_agent
@@ -92,10 +95,11 @@ module Modbot
       what_conditions.each do |x|
         h = Hashie::Mash.new
         h.subject, h.attribute, h.query, h.action = x[0].to_sym, x[1].to_sym, x[2].to_sym, x[4].to_sym
+        h.weight = x[5] || 1 
         h.what = process_what(x[3])
         case h.query
         when :matches
-          h.what = Regexp.union(h.what)
+          h.what = Regexp.union(Regexp.escape(h.what))
         when :contains
           tt = []
           h.what.each do |t|
@@ -113,31 +117,32 @@ module Modbot
       @uh = get_current_user(m_modrname).uh
     end
 
+    # combine these threee
     #fetch results for this agent
-    def fetch
-      current_subreddits.each do |s|
-        [:report, :spam, :submission].each { |x| fetch_results(x, s) }
+    def fetch(subreddits = current_subreddits, queue = QUEUES)
+      subreddits.each do |s|
+        queue.each { |x| fetch_results(x, s) } unless queue.nil?
       end
     end
  
     #check the current or passed(hmmmm, tbd) set of results for this agent 
-    def check
-      current_subreddits.each do |s|
-        [:report, :spam, :submission].each { |x| check_results(s["#{x}_recent"]) }
+    def check(subreddits = current_subreddits, queue = QUEUES)
+      subreddits.each do |s|
+        queue.each { |x| check_results(s["#{x}_recent"]) } unless queue.nil?
       end
     end
 
     #check the current or passed(hmmmm, tbd) set of results
-    def process
-      current_subreddits.each do |s|
-        [:report, :spam, :submission].each { |x| process_results(s["#{x}_recent"]) }
+    def process(subreddits = current_subreddits, queue = QUEUES)
+      subreddits.each do |s|
+        queue.each { |x| process_results(s["#{x}_recent"]) } unless queue.nil?
       end
     end
 
     #handle one specific subreddit 
-    def manage_subreddit(for_what = [:report, :spam, :submission], subreddit)
+    def manage_subreddit(for_what = QUEUES, subreddit)
       #if #subreddit not part of this instance subreddits
-        #message that this
+        #message this
       #else 
       #  for_what.each { |f| self.fetch_results(f, subreddit) }
       #  for_what.each { |f| self.check_results(subreddit["#{f}_recent"]) }

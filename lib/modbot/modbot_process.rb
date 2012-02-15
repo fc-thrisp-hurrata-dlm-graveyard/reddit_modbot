@@ -6,14 +6,19 @@ module ModbotProcess
       if item.verdict.empty?
         @l.info "Not enough information to make a decision on this item"
       else
-        verdict = item.verdict.count {|x| x == :approve }.to_f / item.verdict.count {|x| x == :remove }.to_f
-        score_verdict(verdict)
+        verdict = score(item.verdict, :approve) / score(item.verdict, :remove)
+        score_verdict(item, verdict)
         perform_action(action, item)
       end
     end
   end
 
-  def score_verdict(verdict)
+  def score(input, selection)
+    input.select { |x| x[0] == selection }.collect {|x,y| y}.inject(:+).to_f
+  end
+      
+    
+  def score_verdict(item, verdict)
     case verdict
     when verdict.infinite?
       verdict = 1
@@ -26,10 +31,15 @@ module ModbotProcess
     end
     item.score = verdict
     @l.info "#{item.verdict} yields a score of #{item.score} for item #{item.fullid}"
+    return action
   end
 
   def track_alerts(item)
     perform_action(:alert, item) if item.verdict.count {|x| x == :alert } >= 1 
+  end
+
+  def perform_alert(who = @m_modrname, alert_type, contents = [])
+    send_reddit_message(who, "#{alert_type} alert from #{self.to_s}", contents)
   end 
        
   def perform_action(action, item)
@@ -43,7 +53,7 @@ module ModbotProcess
       self.remove(item.fullid)
       @l.info "removed #{item.fullid}" # description
     when :alert
-      self.perform_alert(:item, "Alert triggered for #{item.kind} #{item.fullid} :: #{item.author} :: #{item.inspect}")
+      self.perform_alert(self.m_modrname, :item, "Alert triggered for #{item.kind} #{item.fullid} :: #{item.author} :: #{item.inspect}")
     else
       @l.info "Oddly, nothing to perform but perform action triggered"
     end

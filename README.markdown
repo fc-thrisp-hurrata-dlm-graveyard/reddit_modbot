@@ -30,26 +30,28 @@ instance -- still needs tweaking)
 
   - what: your words, phrases, or number
 
-  - action: approve, remove, alert(does nothing atm)
+  - action: approve, remove, alert
+
+  - weight: assign a numerical weighting to this condition; higher numbers make that condition action more likely when condition is true for a post or comment
 
 TODO
 ---
 
-- everything is sort of bits and pieces atm 
-
-- tests and testing
+- tests/spec
 
 - refactor, refactor, refactor
 
-- refined condition testing options, condition weighting and scoring
+- refined condition testing options, condition weighting, and scoring
 
+- configurable logger, allow specification of logger to hook into by init choice 
+
+- improved notifications for removals --- comment on the item
 
 Think about
 ---
 
   - wrappers modularization, e.g. use a modbot instance for a specific api, decouple from reddit and allow numerous api types
 
-  - condition weighting; certain conditions can take priority for remove/approve
 
 notes 
     #main(fetch       -- results,

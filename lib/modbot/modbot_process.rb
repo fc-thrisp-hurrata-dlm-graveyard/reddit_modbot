@@ -3,25 +3,29 @@ module ModbotProcess
   def process_results(results_set)
     results_set.each do |item|
       track_alerts(item)
-      if v.verdict.empty?
+      if item.verdict.empty?
         @l.info "Not enough information to make a decision on this item"
       else
         verdict = item.verdict.count {|x| x == :approve }.to_f / item.verdict.count {|x| x == :remove }.to_f
-        case verdict
-        when verdict.infinite?
-          verdict = 1
-          action = v.action
-        when verdict.nan?
-          verdict = 0
-          action = :inconclusive
-        else
-          verdict >= 1 ? action = :approve : action = :remove
-        end
-        item.score = verdict
-        @l.info "#{v.verdict} yields a score of #{v.score} for item #{v.fullid}"
-        perform_action(action, v)
+        score_verdict(verdict)
+        perform_action(action, item)
       end
     end
+  end
+
+  def score_verdict(verdict)
+    case verdict
+    when verdict.infinite?
+      verdict = 1
+      action = v.action
+    when verdict.nan?
+      verdict = "NaN"
+      action = :inconclusive
+    else
+      verdict >= 1 ? action = :approve : action = :remove
+    end
+    item.score = verdict
+    @l.info "#{item.verdict} yields a score of #{item.score} for item #{item.fullid}"
   end
 
   def track_alerts(item)
@@ -31,7 +35,7 @@ module ModbotProcess
   def perform_action(action, item)
     case action
     when :inconclusive
-      @l.info "not enough data to approve, remove, or call alert for #{item.fullid}"
+      @l.info "not enough data to approve, remove, or call alert for #{item.fullid}, item not relevant to supplied conditions"
     when :approve
       self.approve(item.fullid)
       @l.info "approved #{item.fullid}" # improve description 
@@ -42,17 +46,6 @@ module ModbotProcess
       self.perform_alert(:item, "Alert triggered for #{item.kind} #{item.fullid} :: #{item.author} :: #{item.inspect}")
     else
       @l.info "Oddly, nothing to perform but perform action triggered"
-    end
-  end
-
-  def perform_alert(alert_type, who = @m_modrname,  contents = [])
-    case :alert_type
-    when :item
-      send_reddit_message(m_modrname, "item alert - #{self.to_s}", contents)
-    when :conditions
-      send_reddit_message(m_modrname, "conditions alert - #{self.to_s}", contents)
-    when :other_reddit
-      send_reddit_message(who, "alert from - #{self.to_s}", contents)
     end
   end
 

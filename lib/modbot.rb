@@ -7,10 +7,8 @@ require "modbot/modbot_utilities"
 require "logger"
 
 module Modbot
-
   class Agent
-    
-    #autoload
+    #autoload perhaps 
     include RedditWrap
     include ModbotFetch
     include ModbotCheck 
@@ -111,7 +109,7 @@ module Modbot
     end
 
     def login_moderator
-      login(m_modrname,m_password)
+      login(m_modrname,m_password) unless ( m_modrname.nil? || m_password.nil? )
       @uh = get_current_user(m_modrname).uh
     end
 

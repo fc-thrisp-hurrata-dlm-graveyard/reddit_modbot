@@ -26,7 +26,7 @@ module ModbotCheck
 
   #Checks an item against a single condition.
   def check_condition(condition, item)
-    #refactor with some sort of hash table or is adding more burden
+    #refactor with some sort of hash table or would that add unnecessary burden
     #available_conditions = { author: item.author.name,
     #                          title: item.title, 
     #                          body: item.body, 
@@ -73,13 +73,15 @@ module ModbotCheck
     if test.kind_of?(Integer) || test == true
       item.verdict << condition.action
       test_result = true
+      @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{test_result}, recommend #{condition.action}"
     elsif test.nil? || test == false
       item.verdict << :fail
-      test_result = false 
+      test_result = false
+      @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{test_result}, recommend no action"
     else
-      test_result = "failure"
+      test_result = :test_failure
+      @l.info "#{test_item} ::: test failure or inconclusive"
     end
-    @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{test_result}, recommend #{condition.action}"
   end
      
   #tests an item against a condition, returns true or false

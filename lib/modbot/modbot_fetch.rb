@@ -12,7 +12,7 @@ module ModbotFetch
       else
         check_alerts("#{which_q}_threshold".to_sym, results.count, subreddit)
         subreddit["#{which_q}_recent"] = results
-         @l.info "#{results.count} new items from #{which_q} to check"
+        @l.info "#{results.count} new items from #{which_q} to check"
       end
     end
 

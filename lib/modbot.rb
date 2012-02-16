@@ -7,7 +7,16 @@ require "modbot/modbot_process"
 require "modbot/modbot_utilities"
 require "logger"
 
-module Modbot
+#module Modbot
+#  autoload :ModbotAgent, '' 
+#  autoload :ModbotFetch, ''
+#  autoload :ModbotCheck, '' 
+#  autoload :ModbotProcess, '' 
+#  autoload :ModbotUtilities, ''
+#  #autoload modularized wrappers RedditWrap
+#end
+
+module Modbot #ModbotAgent
   class Agent
     #autoload perhaps 
     include RedditWrap
@@ -42,7 +51,7 @@ module Modbot
     end
 
     def to_s
-      "reddit_modbot instance for moderator #@m_modrname"
+      "reddit_modbot instance for moderator #@m_modrname" # of #{current_subreddits_names.join(",")}"
     end
 
     def internet_agent
@@ -69,6 +78,12 @@ module Modbot
       @subreddits
     end
 
+    def current_subreddits_names
+      y = []
+      @subreddits.each { |x| y << x.name }
+      y 
+    end   
+    
     def current_timestamps
       @timestamps
     end

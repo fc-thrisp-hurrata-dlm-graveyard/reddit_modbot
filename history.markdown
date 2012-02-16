@@ -1,6 +1,18 @@
 Version history & notes
 ---
 
+  0.1.0 'mostly functional'
+
+    - modularized fetch, check, process
+   
+    - deliver a 'verdict' on each item based on what conditions the item passed for 
+
+    - condition weighting to allow specification of condition precedence
+
+  0.0.5
+
+    - not much, some spec and moved to 0.1.0
+
   0.0.4
  
     - separated checking from fetching, most recent result sets are held e.g subreddit.spam_recent

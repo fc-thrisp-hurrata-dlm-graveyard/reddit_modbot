@@ -24,7 +24,7 @@ module ModbotProcess
     return action
   end
 
-  def perform_alert(who=self.m_modrname, alert_type, contents)
+  def perform_alert(who=self.m_modrname, alert_type=:default, contents="nothing")
     send_reddit_message(who, "#{alert_type} alert from #{self.to_s}", contents)
   end 
        

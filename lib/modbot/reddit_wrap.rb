@@ -73,7 +73,7 @@ module RedditWrap
       y.karma_ratio = (x['data']['link_karma'].to_f / x['data']['comment_karma'].to_f).round(3)
       y
     rescue
-      @l.info "problem with getting user information"
+      @l.info "problem with getting user #{name} information"
     end 
   end
 
@@ -97,37 +97,37 @@ module RedditWrap
   def q_parse(route, limit)
     begin 
       x = @internet_agent.get route, 'limit' => limit
+      y = JSON.parse(x.body)['data']['children']
+      z = []
+      if y.empty?
+        z
+      else
+        y.each do |yy|
+          h = Hashie::Mash.new
+          h.verdict = []
+          h.timestamp = yy['data']['created']
+          h.id = yy['data']['id']
+          h.fullid = yy['data']['name']
+          h.author = reddit_user(yy['data']['author'])
+          if yy['kind'] == "t1"
+            h.kind = "comment"
+            h.comment = yy['data']['body']
+          elsif yy['kind'] == "t3"
+            h.kind = "submitted_link"
+            h.title = yy['data']['title']
+            h.is_self = yy['data']['is_self']
+            h.selftext = yy['data']['selftext']
+            h.url = yy['data']['url']
+          else
+            h.kind = "wtf, something not a link or comment" 
+          end
+          z << h
+        end
+      end
+      z
     rescue #Errno::ETIMEDOUT, Timeout::Error, Net::HTTPNotFound
       @l.info "problem with route #{route}"
     end
-    y = JSON.parse(x.body)['data']['children']
-    z = []
-    if y.empty?
-      z
-    else
-      y.each do |yy|
-        h = Hashie::Mash.new
-        h.verdict = []
-        h.timestamp = yy['data']['created']
-        h.id = yy['data']['id']
-        h.fullid = yy['data']['name']
-        h.author = reddit_user(yy['data']['author'])
-        if yy['kind'] == "t1"
-          h.kind = "comment"
-          h.comment = yy['data']['body']
-        elsif yy['kind'] == "t3"
-          h.kind = "submitted_link"
-          h.title = yy['data']['title']
-          h.is_self = yy['data']['is_self']
-          h.selftext = yy['data']['selftext']
-          h.url = yy['data']['url']
-        else
-          h.kind = "wtf, something not a link or comment" 
-        end
-        z << h
-      end
-    end
-    z
   end
 
   def user_age(from_when)

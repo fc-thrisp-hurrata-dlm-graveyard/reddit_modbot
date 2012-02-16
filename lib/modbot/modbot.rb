@@ -1,3 +1,13 @@
+#require "modbot/version"
+#require "modbot/modbot"
+#require "modbot/reddit_wrap"
+#require "modbot/modbot_fetch"
+#require "modbot/modbot_check"
+#require "modbot/modbot_score"
+#require "modbot/modbot_process"
+#require "modbot/modbot_utilities"
+#require "logger"
+
 #module Modbot
 #  autoload :ModbotAgent, '' 
 #  autoload :ModbotFetch, ''
@@ -7,7 +17,6 @@
 #  autoload :ModbotUtilities, ''
 #  #autoload modularized wrappers RedditWrap
 #end
-require "modbot/reddit_wrap"
 
 module Modbot #ModbotAgent
   class Agent

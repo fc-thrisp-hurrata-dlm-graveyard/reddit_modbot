@@ -7,3 +7,5 @@ require "modbot/modbot_process"
 require "modbot/modbot_utilities"
 require "logger"
 require "modbot/reddit_wrap"
+#module Modbot
+#end

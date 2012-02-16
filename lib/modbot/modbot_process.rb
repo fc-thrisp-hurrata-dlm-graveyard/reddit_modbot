@@ -1,6 +1,6 @@
 module ModbotProcess
 
-  def analyze_acore(item)
+  def analyze_score(item)
     case item.score
     when item.score.infinite?
       action = item.action

@@ -22,14 +22,4 @@ module ModbotUtilities
     current_conditions.select { |x| x.subject == subject } 
   end
 
-  #dev
-  #def m_pack
-  #  [@m_modrname, @m_password, @uh]
-  #end
-
-  #dev
-  #def belch_out_agent
-  #  @internet_agent.inspect
-  #end
-
 end

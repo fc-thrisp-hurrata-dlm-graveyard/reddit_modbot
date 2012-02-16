@@ -27,7 +27,7 @@ module RedditWrap
     begin
       @internet_agent.post "https://ssl.reddit.com/api/login/#{user}", 
           'passwd' => password,
-          'user' =>  user, #appears required not redundant
+          'user' =>  user,
           'type' => 'json'
     rescue
       @l.info "unable to login to reddit with the provided credentials"
@@ -35,19 +35,19 @@ module RedditWrap
   end
 
   #http://www.reddit.com/r/#{SUBREDDIT}/new.json
-  def get_reddit_submissions(reddit_name, limit = 50)
+  def get_reddit_submissions(reddit_name, limit = 300)
     route = "http://www.reddit.com/r/#{reddit_name}/new.json"
     q_parse(route, limit)
   end
 
   #http://www.reddit.com/r/#{SUBREDDIT}/about/reports/.json
-  def get_reddit_reports(reddit_name, limit = 25)
+  def get_reddit_reports(reddit_name, limit = 100)
     route = "http://www.reddit.com/r/#{reddit_name}/about/reports/.json"
     q_parse(route, limit)
   end
 
   #http://www.reddit.com/r/#{SUBREDDIT}/about/spam/.json
-  def get_reddit_spams(reddit_name, limit = 50)
+  def get_reddit_spams(reddit_name, limit = 300)
     route = "http://www.reddit.com/r/#{reddit_name}/about/spam/.json"
     q_parse(route, limit)
   end

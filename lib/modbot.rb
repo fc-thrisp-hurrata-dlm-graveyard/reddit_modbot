@@ -72,9 +72,15 @@ module Modbot
       @timestamps
     end
 
+    #start thinking about handling wrappers modularly
+    def initialize_wrapper
+      @api_rate_limit = 2 
+    end
+
+    #intialize an agent to handle the internet
     def initialize_internet_agent 
       @internet_agent = Mechanize.new{ |agent| agent.user_agent_alias = 'Mac Safari' }
-      @internet_agent.history_added = Proc.new {sleep 2}
+      @internet_agent.history_added = Proc.new {sleep @api_rate_limit}
     end
 
     #process subreddits on intialize
@@ -116,37 +122,25 @@ module Modbot
       @uh = get_current_user(m_modrname).uh
     end
 
-    # combine these threee
     #fetch results for this agent
-    def fetch(subreddits = current_subreddits, queue = QUEUES)
+    def fetch(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
         queue.each { |x| fetch_results(x, s) } unless queue.nil?
       end
     end
  
     #check the current or passed(hmmmm, tbd) set of results for this agent 
-    def check(subreddits = current_subreddits, queue = QUEUES)
+    def check(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
         queue.each { |x| check_results(s["#{x}_recent"]) } unless queue.nil?
       end
     end
 
     #check the current or passed(hmmmm, tbd) set of results
-    def process(subreddits = current_subreddits, queue = QUEUES)
+    def process(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
         queue.each { |x| process_results(s["#{x}_recent"]) } unless queue.nil?
       end
-    end
-
-    #handle one specific subreddit 
-    def manage_subreddit(for_what = QUEUES, subreddit)
-      #if #subreddit not part of this instance subreddits
-        #message this
-      #else 
-      #  for_what.each { |f| self.fetch_results(f, subreddit) }
-      #  for_what.each { |f| self.check_results(subreddit["#{f}_recent"]) }
-      #  for_what.each { |f| self.process_results(subreddit["#{f}_recent"]) }
-      #end 
     end
 
     def manage_subreddits

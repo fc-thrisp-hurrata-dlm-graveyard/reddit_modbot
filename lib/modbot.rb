@@ -126,21 +126,21 @@ module Modbot
     #fetch results for this agent
     def fetch(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
-        queue.each { |x| fetch_results(x, s) } unless queue.nil?
+        queues.each { |x| fetch_results(x, s) } unless queue.nil?
       end
     end
  
     #check the current or passed(hmmmm, tbd) set of results for this agent 
     def check(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
-        queue.each { |x| check_results(s["#{x}_recent"]) } unless queue.nil?
+        queues.each { |x| check_results(s["#{x}_recent"]) } unless queue.nil?
       end
     end
 
     #check the current or passed(hmmmm, tbd) set of results
     def process(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
-        queue.each { |x| process_results(s["#{x}_recent"]) } unless queue.nil?
+        queues.each { |x| process_results(s["#{x}_recent"]) } unless queue.nil?
       end
     end
 

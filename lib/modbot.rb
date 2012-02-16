@@ -146,14 +146,21 @@ module Modbot #ModbotAgent
       end
     end
  
-    #check the current or passed(hmmmm, tbd) set of results for this agent 
+    #check the current by q 
     def check(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
         queues.each { |x| check_results(s["#{x}_recent"]) } unless queues.nil?
       end
     end
 
-    #check the current or passed(hmmmm, tbd) set of results
+    #score the current by q 
+    def score(subreddits = current_subreddits, queues = QUEUES)
+      subreddits.each do |s|
+        queues.each { |x| score_results(s["#{x}_recent"]) } unless queues.nil?
+      end
+    end
+
+    #process the current by q
     def process(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
         queues.each { |x| process_results(s["#{x}_recent"]) } unless queues.nil?
@@ -163,6 +170,7 @@ module Modbot #ModbotAgent
     def manage_subreddits
       fetch
       check
+      score
       process       
     end
 

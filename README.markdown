@@ -5,13 +5,13 @@ Use
 
 Install as gem in your system or project
 
-Use Modbot::ModBot.new instance specifying arguments for moderator, subreddits, and conditions 
+Use Modbot::Agent.new instance specifying arguments for moderator, subreddits, and conditions 
 OR specify a yaml config file to be read (reads from root of project or irb/pry 
 instance -- still needs tweaking)
 
-    Modbot::ModBot.new(:pass_config)
+    Modbot::Agent.new(:pass_config)
 
-    Modbot::ModBot.new(:pass_arg,
+    Modbot::Agent.new(:pass_arg,
                        moderator = {'name' => '', 'password' => ''},
                        subreddits = [[], [], []]
                        conditions = [ [], [], []])  # this is the default
@@ -41,22 +41,17 @@ TODO
 
 - refactor, refactor, refactor
 
-- refined condition testing options, condition weighting, and scoring
+- refined condition testing options
 
 - configurable logger, allow specification of logger to hook into by init choice 
 
 - improved notifications for removals --- comment on the item
 
+- find out how to do notifications -- captcha requirements cut that off for the test mod, though the impact will vary
+
+- improved config file intialization
+
 Think about
 ---
 
   - wrappers modularization, e.g. use a modbot instance for a specific api, decouple from reddit and allow numerous api types
-
-
-notes 
-    #main(fetch       -- results,
-    #     compare     -- times,
-    #     check       -- items/conditions,
-    #     test        -- item what / condition attribute,
-    #     process     -- check item verdicts
-    #     perform     -- approve/remove/alert moderator )

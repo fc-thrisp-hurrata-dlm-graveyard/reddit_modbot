@@ -3,9 +3,9 @@ Version history & notes
 
   0.1.0 'mostly functional'
 
-    - modularized fetch, check, process
+    - modularized fetch, check, process, separated out score as well
    
-    - deliver a 'verdict' on each item based on what conditions the item passed for 
+    - deliver a 'verdict' on each item based on what conditions the item passed for, then score 
 
     - condition weighting to allow specification of condition precedence
 

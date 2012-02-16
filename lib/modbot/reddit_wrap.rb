@@ -64,7 +64,11 @@ module RedditWrap
 
   #http://www.reddit.com/user/#{USER_NAME}/about/.json# users other than the current mod
   def reddit_user(name)
-    x = @internet_agent.get "http://www.reddit.com/user/#{name}/about.json"
+    begin
+      x = @internet_agent.get "http://www.reddit.com/user/#{name}/about.json"
+    rescue
+      @l.info "problem with getting user information"
+    end 
     x = JSON.parse(x.body)
     y = Hashie::Mash.new
     y.name, y.created, y.link_karma, y.comment_karma = x['data']['name'], x['data']['created'], x['data']['link_karma'], x['data']['comment_karma']
@@ -93,7 +97,7 @@ module RedditWrap
   def q_parse(route, limit)
     begin 
       x = @internet_agent.get route, 'limit' => limit
-    rescue Errno::ETIMEDOUT, Timeout::Error, Net::HTTPNotFound
+    rescue #Errno::ETIMEDOUT, Timeout::Error, Net::HTTPNotFound
       @l.info "problem with route #{route}"
     end
     y = JSON.parse(x.body)['data']['children']

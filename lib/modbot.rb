@@ -124,6 +124,7 @@ module Modbot
     end
 
     #fetch results for this agent
+    #subreddits must be in an array!
     def fetch(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
         queues.each { |x| fetch_results(x, s) } unless queues.nil?

@@ -91,10 +91,10 @@ module RedditWrap
 
   #misc utility methods
   def q_parse(route, limit)
-    if limit == :none 
-      x = @internet_agent.get route
-    else 
+    begin 
       x = @internet_agent.get route, 'limit' => limit
+    rescue Errno::ETIMEDOUT, Timeout::Error, Net::HTTPNotFound
+      @l.info "problem with route #{route}"
     end
     y = JSON.parse(x.body)['data']['children']
     z = []

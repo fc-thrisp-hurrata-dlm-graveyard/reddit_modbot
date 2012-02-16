@@ -22,6 +22,7 @@ module Modbot
 
     def initialize(config = :pass_arg, moderator = {}, subreddits = [], conditions = [])
       @l = Logger.new(STDOUT)
+      initialize_wrapper
       initialize_internet_agent
       if config == :pass_arg
         @m_modrname = moderator['name']

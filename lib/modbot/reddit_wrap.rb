@@ -66,15 +66,15 @@ module RedditWrap
   def reddit_user(name)
     begin
       x = @internet_agent.get "http://www.reddit.com/user/#{name}/about.json"
+      x = JSON.parse(x.body)
+      y = Hashie::Mash.new
+      y.name, y.created, y.link_karma, y.comment_karma = x['data']['name'], x['data']['created'], x['data']['link_karma'], x['data']['comment_karma']
+      y.user_age = user_age( x['data']['created'] )
+      y.karma_ratio = (x['data']['link_karma'].to_f / x['data']['comment_karma'].to_f).round(3)
+      y
     rescue
       @l.info "problem with getting user information"
     end 
-    x = JSON.parse(x.body)
-    y = Hashie::Mash.new
-    y.name, y.created, y.link_karma, y.comment_karma = x['data']['name'], x['data']['created'], x['data']['link_karma'], x['data']['comment_karma']
-    y.user_age = user_age( x['data']['created'] )
-    y.karma_ratio = (x['data']['link_karma'].to_f / x['data']['comment_karma'].to_f).round(3)
-    y
   end
 
   #http://www.reddit.com/api/approve/.json

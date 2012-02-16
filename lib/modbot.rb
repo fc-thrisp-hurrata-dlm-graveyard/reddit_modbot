@@ -50,7 +50,7 @@ module Modbot #ModbotAgent
     end
 
     def to_s
-      "reddit_modbot for for reddits #{current_subreddits_names.join(",")} (moderator: #@m_modrname)"
+      "reddit_modbot for reddits #{current_subreddits_names.join(",")} (moderator: #@m_modrname)"
     end
 
     def internet_agent

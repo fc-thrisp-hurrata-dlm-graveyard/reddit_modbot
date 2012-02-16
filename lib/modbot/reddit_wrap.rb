@@ -98,6 +98,7 @@ module RedditWrap
           h.timestamp = yy['data']['created']
           h.id = yy['data']['id']
           h.fullid = yy['data']['name']
+          h.permalink = yy['data']['permalink']
           h.author = reddit_user(yy['data']['author'])
           if yy['kind'] == "t1"
             h.kind = "comment"

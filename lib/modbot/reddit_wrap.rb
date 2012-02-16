@@ -1,16 +1,6 @@
-# wrapper provides interface to
-# moderator login, user information, information queues (reports, spam, and new submissions here),
-# approve, remove, send messages
-# ? how to structure here and in modbot for a standardized interface between ?   
-
 #ad hoc reddit api wrapper
 require 'json'
 module RedditWrap
-
-  #something more extensive to pull up all routes needed from simple cues
-  #reddit_route('reports'
-  #def reddit_route(route)
-  #end
 
   #http://www.reddit.com/user/#{USER_NAME}/about/.json
   def get_current_user(user)

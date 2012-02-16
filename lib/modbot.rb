@@ -14,7 +14,6 @@ require "logger"
 #  autoload :ModbotScore, '' 
 #  autoload :ModbotProcess, '' 
 #  autoload :ModbotUtilities, ''
-#  #autoload modularized wrappers RedditWrap
 #end
 
 module Modbot #ModbotAgent
@@ -32,7 +31,6 @@ module Modbot #ModbotAgent
 
     def initialize(config = :pass_arg, moderator = {}, subreddits = [], conditions = [], options = {})
       @l = Logger.new(STDOUT)
-      initialize_wrapper
       initialize_internet_agent
       if config == :pass_arg
         @m_modrname = moderator['name']
@@ -52,7 +50,7 @@ module Modbot #ModbotAgent
     end
 
     def to_s
-      "modbot for #@wrapper_name, reddits #{current_subreddits_names.join(",")} (moderator: #@m_modrname)"
+      "reddit_modbot for for reddits #{current_subreddits_names.join(",")} (moderator: #@m_modrname)"
     end
 
     def internet_agent
@@ -87,16 +85,10 @@ module Modbot #ModbotAgent
       @timestamps
     end
 
-    #start thinking about handling wrappers modularly
-    def initialize_wrapper
-      @wrapper_name = "reddit.com"
-      @api_rate_limit = 2 
-    end
-
     #intialize an agent to handle the internet
     def initialize_internet_agent 
       @internet_agent = Mechanize.new{ |agent| agent.user_agent_alias = 'Mac Safari' }
-      @internet_agent.history_added = Proc.new {sleep @api_rate_limit}
+      @internet_agent.history_added = Proc.new {sleep 2}
     end
 
     #process subreddits on intialize

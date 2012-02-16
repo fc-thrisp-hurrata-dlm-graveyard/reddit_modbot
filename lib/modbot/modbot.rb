@@ -7,6 +7,7 @@
 #  autoload :ModbotUtilities, ''
 #  #autoload modularized wrappers RedditWrap
 #end
+require "modbot/reddit_wrap"
 
 module Modbot #ModbotAgent
   class Agent

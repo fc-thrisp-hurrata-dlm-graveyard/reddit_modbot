@@ -1,32 +1,24 @@
 module ModbotProcess
 
+  def analyze_acore(item)
+    case item.score
+    when item.score.infinite?
+      action = item.action
+    when item.score.nan? || item.verdict.empty? || item.score.empty?
+      action = :inconclusive
+    else
+      item.score >= 1 ? action = :approve : action = :remove
+    end
+    return action
+  end
+
   def track_alerts(item)
     perform_action(:alert, item) if item.verdict.count {|x| x == :alert } >= 1 
   end
 
-  def score(input, selection)
-    input.select { |x| x[0] == selection }.collect {|x,y| y}.inject(:+).to_f
-  end
-       
-  def score_verdict(item, verdict)
-    case verdict
-    when verdict.infinite?
-      verdict = 1
-      action = v.action
-    when verdict.nan?
-      verdict = "NaN"
-      action = :inconclusive
-    else
-      verdict >= 1 ? action = :approve : action = :remove
-    end
-    item.score = verdict
-    @l.info "#{item.verdict} yields a score of #{item.score} for item #{item.fullid}"
-    return action
-  end
-
   def perform_alert(who=self.m_modrname, alert_type=:default, contents="nothing")
     send_reddit_message(who, "#{alert_type} alert from #{self.to_s}", contents)
-  end 
+  end
        
   def perform_action(action, item)
     case action
@@ -48,13 +40,9 @@ module ModbotProcess
   def process_results(results_set)
     results_set.each do |item|
       track_alerts(item)
-      if item.verdict.empty?
-        @l.info "Not enough information to make a decision on this item"
-      else
-        verdict = score(item.verdict, :approve) / score(item.verdict, :remove)
-        action = score_verdict(item, verdict)
-        perform_action(action, item)
-      end
+      action = analyze_score(item)
+      perform_action(action, item)
     end
   end
+
 end

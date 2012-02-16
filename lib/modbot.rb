@@ -10,7 +10,8 @@ require "logger"
 #module Modbot
 #  autoload :ModbotAgent, '' 
 #  autoload :ModbotFetch, ''
-#  autoload :ModbotCheck, '' 
+#  autoload :ModbotCheck, ''
+#  autoload :ModbotScore, '' 
 #  autoload :ModbotProcess, '' 
 #  autoload :ModbotUtilities, ''
 #  #autoload modularized wrappers RedditWrap
@@ -18,10 +19,10 @@ require "logger"
 
 module Modbot #ModbotAgent
   class Agent
-    #autoload perhaps 
     include RedditWrap
     include ModbotFetch
-    include ModbotCheck 
+    include ModbotCheck
+    include ModbotScore
     include ModbotProcess 
     include ModbotUtilities
 
@@ -51,7 +52,7 @@ module Modbot #ModbotAgent
     end
 
     def to_s
-      "reddit_modbot for moderator #@m_modrname for reddits #{current_subreddits_names.join(",")}"
+      "reddit_modbot for reddits #{current_subreddits_names.join(",")} (moderator: #@m_modrname)"
     end
 
     def internet_agent

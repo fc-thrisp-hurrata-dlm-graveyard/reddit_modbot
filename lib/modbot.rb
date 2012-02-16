@@ -51,7 +51,7 @@ module Modbot #ModbotAgent
     end
 
     def to_s
-      "reddit_modbot instance for moderator #@m_modrname" # of #{current_subreddits_names.join(",")}"
+      "reddit_modbot for moderator #@m_modrname for reddits #{current_subreddits_names.join(",")}"
     end
 
     def internet_agent
@@ -79,9 +79,7 @@ module Modbot #ModbotAgent
     end
 
     def current_subreddits_names
-      y = []
-      @subreddits.each { |x| y << x.name }
-      y 
+      @subreddits.each.collect(&:name)
     end   
     
     def current_timestamps

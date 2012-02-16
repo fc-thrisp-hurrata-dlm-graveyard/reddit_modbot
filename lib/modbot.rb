@@ -1,11 +1,11 @@
 require "modbot/version"
 #require "modbot/modbot"
-require "modbot/reddit_wrap"
-require "modbot/modbot_fetch"
-require "modbot/modbot_check"
-require "modbot/modbot_score"
-require "modbot/modbot_process"
-require "modbot/modbot_utilities"
+#require "modbot/reddit_wrap"
+#require "modbot/modbot_fetch"
+#require "modbot/modbot_check"
+#require "modbot/modbot_score"
+#require "modbot/modbot_process"
+#require "modbot/modbot_utilities"
 require "logger"
 
 #module Modbot
@@ -31,7 +31,7 @@ module Modbot #ModbotAgent
 
     QUEUES = [:report, :spam, :submission]
 
-    def initialize(config = :pass_arg, moderator = {}, subreddits = [], conditions = [])
+    def initialize(config = :pass_arg, moderator = {}, subreddits = [], conditions = [], options = {})
       @l = Logger.new(STDOUT)
       initialize_wrapper
       initialize_internet_agent
@@ -53,7 +53,7 @@ module Modbot #ModbotAgent
     end
 
     def to_s
-      "reddit_modbot for reddits #{current_subreddits_names.join(",")} (moderator: #@m_modrname)"
+      "modbot for #@wrapper_name, reddits #{current_subreddits_names.join(",")} (moderator: #@m_modrname)"
     end
 
     def internet_agent
@@ -90,6 +90,7 @@ module Modbot #ModbotAgent
 
     #start thinking about handling wrappers modularly
     def initialize_wrapper
+      @wrapper_name = "reddit.com"
       @api_rate_limit = 2 
     end
 

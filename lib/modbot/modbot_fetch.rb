@@ -8,7 +8,7 @@ module ModbotFetch
     if proceed
       results = fetch_results(which_q, subreddit, which_to)
       results = filterby_timestamp(which_q, subreddit, results) unless results.empty?
-      store_results(subreddit, results)
+      store_results(subreddit, which_q, results)
     else
       subreddit["#{which_q}_recent"] = []
       @l.info "nothing new for #{subreddit.name}::#{which_q}"
@@ -50,7 +50,7 @@ module ModbotFetch
   end
 
   #store results in variable for checking
-  def store_results(subreddit, results)
+  def store_results(subreddit, which_q, results)
     if results.empty?
       subreddit["#{which_q}_recent"] = []
       @l.info "nothing to report, #{subreddit.name}::#{which_q} is empty" 

@@ -25,11 +25,7 @@ module ModbotFetch
   end
 
   def compare_timestamp(subreddit_timestamp, timestamp)
-    if subreddit_timestamp >= timestamp
-      return false
-    else
-      return true
-    end
+    subreddit_timestamp >= timestamp
   end
 
   #go to reddit for reslts
@@ -44,8 +40,8 @@ module ModbotFetch
   def filterby_timestamp(which_q, subreddit, results)
     time_to_filter = subreddit.timestamps["#{which_q}_last"]
     results = results.select { |r| r.timestamp > time_to_filter }
-    subreddit.timestamps["#{which_q}_last"] = results[0].timestamp
-    @l.info "#{subreddit.name}::#{which_q} results filtered against most recent time of check, new timestamp #{results[0].timestamp}"
+    subreddit.timestamps["#{which_q}_last"] = results[0].timestamp || Time.now.to_f#hmmm
+    @l.info "#{subreddit.name}::#{which_q} results filtered against most recent time of check, new timestamp #{subreddit.timestamps["#{which_q}_last"]}"
     results
   end
 

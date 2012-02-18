@@ -3,7 +3,7 @@ module ModbotFetch
     #Checks reported items for any matching conditions: report, spam, or submission
     def fetch_results(which_q, subreddit)
       which_to = self.method("get_reddit_#{which_q}s")
-      first_times = fetch_first(which_q, subreddit, which_to)
+      first_times = fetch_first_times(which_q, subreddit, which_to)
       if first_times
         results = which_to.call(subreddit.name, subreddit.item_limit) 
         @l.info "#{results.count} results from #{which_q}"

@@ -25,7 +25,7 @@ module ModbotFetch
   end
 
   def compare_timestamp(subreddit_timestamp, timestamp)
-    subreddit_timestamp >= timestamp
+    subreddit_timestamp <= timestamp
   end
 
   #go to reddit for reslts

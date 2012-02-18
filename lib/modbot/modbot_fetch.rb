@@ -43,7 +43,7 @@ module ModbotFetch
     end
 
    def compare_timestamp(which_q, subreddit, timestamp)
-     if subreddit.timestamps["#{which_q}_last"] >= timestamp
+     if subreddit.timestamps["#{which_q}_last"].to_f >= timestamp.to_f
        return false
      else
        return true

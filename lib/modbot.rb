@@ -106,6 +106,7 @@ module Modbot #ModbotAgent
         h.subject, h.attribute, h.query, h.action = x[0].to_sym, x[1].to_sym, x[2].to_sym, x[4].to_sym
         h.weight = x[5].to_f || 1.to_f
         h.what = process_what(x[3])
+        #h.scope = ## per subreddit / global conditions
         case h.query
         when :matches
           h.what = Regexp.union(h.what)

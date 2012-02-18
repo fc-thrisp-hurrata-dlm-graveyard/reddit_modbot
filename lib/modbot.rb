@@ -47,6 +47,7 @@ module Modbot #ModbotAgent
       end
       @conditions = initialize_conditions(@conditions)
       @subreddits = initialize_subreddits(@subreddits)
+      intialize_options
       login_moderator
     end
 
@@ -124,6 +125,11 @@ module Modbot #ModbotAgent
       z
     end
 
+    def initialize_options
+      #cull invalid options 
+      @options.each { |k,v| instance_variable_set("@#{k}",v)}
+    end
+
     def login_moderator
       login(m_modrname,m_password) unless ( m_modrname.nil? || m_password.nil? )
       @uh = get_current_user(m_modrname).uh
@@ -133,7 +139,7 @@ module Modbot #ModbotAgent
     #subreddits must be in an array!
     def fetch(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
-        queues.each { |x| fetch_results(x, s) } unless queues.nil?
+        queues.each { |x| fetch_recent(x, s) } unless queues.nil?
       end
     end
  

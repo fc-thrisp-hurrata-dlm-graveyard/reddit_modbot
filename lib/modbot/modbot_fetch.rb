@@ -43,7 +43,7 @@ module ModbotFetch
     end
 
    def compare_timestamp(subreddit_timestamp, timestamp)
-     if subreddit.timestamp >= timestamp
+     if subreddit_timestamp >= timestamp
        return false
      else
        return true

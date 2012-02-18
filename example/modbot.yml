@@ -3,8 +3,8 @@ moderator:
   pass: password
 
 subreddits:
-  - [xxxxx, 10, 10, 10]
-  - [yyyyy, 10, 10, 10]
+  - [xxxxx, 10, 10, 10, 20]
+  - [yyyyy, 10, 10, 10, 20]
 
 conditions:
   - [comment, author, matches, "OneAuthor", remove, 10]  

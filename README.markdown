@@ -18,7 +18,7 @@ Generate new instance
 
   - Subreddits: As an array of arrays or see config file example. First three numbers are thresholds for reports, spam, and submissions respectively, the last is the item fetch limit for the subreddit (e.g. you know your subreddit and can pick a useful number defaults to 25 items at a time.
 
-  - Conditions: As an array of arrays containing strings, see config file example. Each condition is an array: [subject, attribute, query, item to query, action]
+  - Conditions: As an array of arrays containing strings, see config file example. Each condition is an array: [subject, attribute, query, item to query, action, weight]
  
     - subject: submitted_link, comment
 

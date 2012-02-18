@@ -6,7 +6,7 @@ module ModbotFetch
     timestamp = get_timestamp(which_q, subreddit, which_to)
     proceed = compare_timestamp(subreddit.timestamps["#{which_q}_last"], timestamp)
     if proceed
-      results = fetch_results(which_q, subreddit)
+      results = fetch_results(which_q, subreddit, which_to)
       tf_results = filterby_timestamp(which_q, subreddit, results)
       store_results(tf_results)
     else
@@ -32,8 +32,8 @@ module ModbotFetch
     end
   end
 
-  #go to reddit for reuslts
-  def fetch_results(which_q, subreddit)
+  #go to reddit for reslts
+  def fetch_results(which_q, subreddit, which_to)
     results = which_to.call(subreddit.name, subreddit.item_limit) 
     @l.info "#{results.count} results from #{subreddit.name}::#{which_q}"
   end

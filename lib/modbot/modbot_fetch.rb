@@ -4,7 +4,7 @@ module ModbotFetch
     def fetch_results(which_q, subreddit)
       which_to = self.method("get_reddit_#{which_q}s")
       timestamp = get_timestamp(which_q, subreddit, which_to)
-      proceed = compare_timestamp(which_q, subreddit, which_to)
+      proceed = compare_timestamp(subreddit.timestamps["#{which_q}_last"], timestamp)
       if proceed
         results = which_to.call(subreddit.name, subreddit.item_limit) 
         @l.info "#{results.count} results from #{which_q}"
@@ -42,8 +42,8 @@ module ModbotFetch
       results
     end
 
-   def compare_timestamp(which_q, subreddit, timestamp)
-     if subreddit.timestamps["#{which_q}_last"].to_f >= timestamp.to_f
+   def compare_timestamp(subreddit_timestamp, timestamp)
+     if subreddit.timestamp >= timestamp
        return false
      else
        return true

@@ -39,8 +39,9 @@ module ModbotFetch
   #see if time has changed on newest item, filter for only items newer than last check
   def filterby_timestamp(which_q, subreddit, results)
     time_to_filter = subreddit.timestamps["#{which_q}_last"]
+    top_time = results[0].timestamp
     results = results.select { |r| r.timestamp > time_to_filter }
-    subreddit.timestamps["#{which_q}_last"] = results[0].timestamp || Time.now.to_f#hmmm
+    subreddit.timestamps["#{which_q}_last"] = top_time# || Time.now.to_f#hmmm
     @l.info "#{subreddit.name}::#{which_q} results filtered against most recent time of check, new timestamp #{subreddit.timestamps["#{which_q}_last"]}"
     results
   end

@@ -43,7 +43,7 @@ module ModbotFetch
 
     def fetch_first_times(which_q, subreddit, which_to)
       result = which_to.call(subreddit.name, 1)
-      if result.timestamp <= subreddit.timestamps["#{which_q}_last"]
+      if result[0].timestamp <= subreddit.timestamps["#{which_q}_last"]
         return false
       else
         return true

@@ -18,10 +18,10 @@ module ModbotFetch
   def get_timestamp(which_q, subreddit, which_to)
     result = which_to.call(subreddit.name, 1)
     result[0].nil? ? time = Time.now.to_f : time = result[0].timestamp 
-    if subreddit.timestamps["#{which_q}_last"].nil?
-      subreddit.timestamps["#{which_q}_last"] = time
+    if subreddit.timestamps["#{which_q}_last"].nil?#factor out to where?
+      @agent_start.nil? ? subreddit.timestamps["#{which_q}_last"] = time : subreddit.timestamps["#{which_q}_last"] = @agent_start
     end
-    time#result[0].timestamp 
+    time 
   end
 
   def compare_timestamp(subreddit_timestamp, timestamp)

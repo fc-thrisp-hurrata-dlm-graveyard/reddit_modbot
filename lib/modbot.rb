@@ -126,7 +126,8 @@ module Modbot #ModbotAgent
     end
 
     def initialize_options
-      #cull invalid options 
+      #cull invalid options
+      #@agent_start#set an initial time for polling queues, else agent will only work from time it first fetches forward
       @options.each { |k,v| instance_variable_set("@#{k}",v)}
     end
 

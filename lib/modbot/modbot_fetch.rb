@@ -8,7 +8,7 @@ module ModbotFetch
     if proceed
       results = fetch_results(which_q, subreddit, which_to)
       results = filterby_timestamp(which_q, subreddit, results) unless results.empty?
-      store_results(results)
+      store_results(subreddit, results)
     else
       subreddit["#{which_q}_recent"] = []
       @l.info "nothing new for #{subreddit.name}::#{which_q}"
@@ -38,19 +38,19 @@ module ModbotFetch
 
   #see if time has changed on newest item, filter for only items newer than last check
   def filterby_timestamp(which_q, subreddit, results)
-    if results[0].nil? || results.empty?
+    if results[0].nil? || results.empty?#obvious screwy logic is screwy, but I'll get it later :/
     else
       time_to_filter = subreddit.timestamps["#{which_q}_last"]
       top_time = results[0].timestamp
       results = results.select { |r| r.timestamp > time_to_filter }
-      subreddit.timestamps["#{which_q}_last"] = top_time# || Time.now.to_f#hmmm
+      subreddit.timestamps["#{which_q}_last"] = top_time
       @l.info "#{subreddit.name}::#{which_q} results filtered against most recent time of check, new timestamp #{subreddit.timestamps["#{which_q}_last"]}"
       results
     end
   end
 
   #store results in variable for checking
-  def store_results(results)
+  def store_results(subreddit, results)
     if results.empty?
       subreddit["#{which_q}_recent"] = []
       @l.info "nothing to report, #{subreddit.name}::#{which_q} is empty" 

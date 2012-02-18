@@ -45,7 +45,6 @@ module Modbot #ModbotAgent
       end
       @conditions = initialize_conditions(@conditions)
       @subreddits = initialize_subreddits(@subreddits)
-      @timestamps = Hashie::Mash.new
       login_moderator
     end
 
@@ -80,10 +79,6 @@ module Modbot #ModbotAgent
     def current_subreddits_names
       @subreddits.each.collect(&:name)
     end   
-    
-    def current_timestamps
-      @timestamps
-    end
 
     #intialize an agent to handle the internet
     def initialize_internet_agent 
@@ -97,6 +92,7 @@ module Modbot #ModbotAgent
       what_subreddits.each do |x|
         h = Hashie::Mash.new
         h.name, h.report_threshold, h.spam_threshold, h.submission_threshold, h.item_limit = x[0], x[1], x[2], x[3], x[4]
+        h.timestamps = Hashie::Mash.new
         z << h
       end
       z

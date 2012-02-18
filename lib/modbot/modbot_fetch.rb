@@ -3,8 +3,9 @@ module ModbotFetch
     #Checks reported items for any matching conditions: report, spam, or submission
     def fetch_results(which_q, subreddit)
       which_to = self.method("get_reddit_#{which_q}s")
-      first_times = fetch_first_times(which_q, subreddit, which_to)
-      if first_times
+      timestamp = get_timestamp(which_q, subreddit, which_to)
+      proceed = compare_timestamp(which_q, subreddit, which_to)
+      if proceed
         results = which_to.call(subreddit.name, subreddit.item_limit) 
         @l.info "#{results.count} results from #{which_q}"
         results = compare_times(which_q, results)
@@ -41,13 +42,18 @@ module ModbotFetch
       results
     end
 
-    def fetch_first_times(which_q, subreddit, which_to)
-      result = which_to.call(subreddit.name, 1)
-      if result[0].timestamp <= subreddit.timestamps["#{which_q}_last"]
-        return false
-      else
-        return true
-      end
-    end
+   def compare_timestamp(which_q, subreddit, timestamp)
+     if subreddit.timestamps["#{which_q}_last"] >= timestamp
+       return false
+     else
+       return true
+     end
+   end
+
+  def get_timestamp(which_q, subreddit, which_to)
+    result = which_to.call(subreddit.name, 1)
+    subreddit.timestamps["#{which_q}_last"] = result[0].timestamp if subreddit.timestamps["#{which_q}_last"].nil?
+    result[0].timestamp 
+  end
 
 end

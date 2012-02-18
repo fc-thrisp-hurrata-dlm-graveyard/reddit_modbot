@@ -3,9 +3,9 @@ A moderation 'bot' for scripting regular forum moderator tasks, currently works 
 Use
 ---
 
-Install as gem in your system or project and require as needed
+1. Install as gem in your system or project and require as needed
 
-Generate new instance
+2. Generate new instance
 
     my_agent = Modbot::Agent.new(:pass_config) #from a yaml file (in the root of your directory)
 
@@ -31,6 +31,14 @@ Generate new instance
     - action: approve, remove, alert
 
     - weight: assign a numerical weighting to this condition; higher numbers make that condition action more likely when condition is true for a post or comment
+
+3. Use as needed
+
+    my_agent.manage_subreddits
+
+   This will fetch, check, score, and process items in reports, spam, and new submissions for the subreddits in this instance
+
+See code for a breakdown on carrying out specific acts (fetch, check, score, process)
 
 TODO
 ---

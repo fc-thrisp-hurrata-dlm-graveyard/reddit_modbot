@@ -3,8 +3,8 @@ module ModbotFetch
   #main method to manage recent q items in spam, report, submissions
   def fetch_recent(which_q, subreddit)
     which_to = self.method("get_reddit_#{which_q}s")
-    timestamp = get_timestamp(which_q, subreddit, which_to)
-    proceed = compare_timestamp(subreddit.timestamps["#{which_q}_last"], timestamp)
+    time_recent = get_time_recent(which_q, subreddit, which_to)
+    proceed = compare_timestamp(subreddit.timestamps["#{which_q}_last"], time_recent)
     if proceed
       results = fetch_results(which_q, subreddit, which_to)
       results = filterby_timestamp(which_q, subreddit, results) unless results.empty?
@@ -15,12 +15,9 @@ module ModbotFetch
     end
   end
 
-  def get_timestamp(which_q, subreddit, which_to)
+  def get_time_recent(which_q, subreddit, which_to)
     result = which_to.call(subreddit.name, 1)
     result[0].nil? ? time = Time.now.to_f : time = result[0].timestamp 
-    if subreddit.timestamps["#{which_q}_last"].nil?#factor out to where?
-      @agent_start.nil? ? subreddit.timestamps["#{which_q}_last"] = time : subreddit.timestamps["#{which_q}_last"] = @agent_start
-    end
     time 
   end
 
@@ -28,7 +25,7 @@ module ModbotFetch
     subreddit_timestamp <= timestamp
   end
 
-  #go to reddit for reslts
+  #go to reddit for results
   def fetch_results(which_q, subreddit, which_to)
     results = which_to.call(subreddit.name, subreddit.item_limit) 
     @l.info "#{results.count} results from #{subreddit.name}::#{which_q}"
@@ -39,6 +36,7 @@ module ModbotFetch
   #see if time has changed on newest item, filter for only items newer than last check
   def filterby_timestamp(which_q, subreddit, results)
     if results[0].nil? || results.empty?#obvious screwy logic is screwy, but I'll get it later :/
+      results = results
     else
       time_to_filter = subreddit.timestamps["#{which_q}_last"]
       top_time = results[0].timestamp

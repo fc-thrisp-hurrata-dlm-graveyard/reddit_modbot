@@ -32,6 +32,7 @@ module Modbot #ModbotAgent
     def initialize(config = :pass_arg, moderator = {}, subreddits = [], conditions = [], options = {})
       @l = Logger.new(STDOUT)
       initialize_internet_agent
+      initialize_options
       if config == :pass_arg
         @m_modrname = moderator['name']
         @m_password = moderator['pass']
@@ -47,7 +48,6 @@ module Modbot #ModbotAgent
       end
       @conditions = initialize_conditions(@conditions)
       @subreddits = initialize_subreddits(@subreddits)
-      initialize_options
       login_moderator
     end
 
@@ -96,6 +96,7 @@ module Modbot #ModbotAgent
         h = Hashie::Mash.new
         h.name, h.report_threshold, h.spam_threshold, h.submission_threshold, h.item_limit = x[0], x[1], x[2], x[3], x[4]
         h.timestamps = Hashie::Mash.new
+        QUEUES.each {|q| h.timestamps["#{q}_last"] = Time.now.to_f}
         z << h
       end
       z
@@ -127,7 +128,7 @@ module Modbot #ModbotAgent
 
     def initialize_options
       #cull invalid options
-      #@agent_start#set an initial time for polling queues, else agent will only work from time it first fetches forward
+      #@agent_start_time#set an initial time for polling queues, else agent will only work from time it first fetches forward
       @options.each { |k,v| instance_variable_set("@#{k}",v)}
     end
 

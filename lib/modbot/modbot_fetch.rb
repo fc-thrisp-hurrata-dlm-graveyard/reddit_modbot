@@ -17,7 +17,7 @@ module ModbotFetch
 
   def get_timestamp(which_q, subreddit, which_to)
     result = which_to.call(subreddit.name, 1)
-    result[0].timestamp ? time = result[0].timestamp : time = Time.now.to_f 
+    result[0].timestamp.nil? ? time = Time.now.to_f : time = result[0].timestamp 
     if subreddit.timestamps["#{which_q}_last"].nil?
       subreddit.timestamps["#{which_q}_last"] = time
     end

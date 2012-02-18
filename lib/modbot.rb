@@ -47,7 +47,7 @@ module Modbot #ModbotAgent
       end
       @conditions = initialize_conditions(@conditions)
       @subreddits = initialize_subreddits(@subreddits)
-      intialize_options
+      initialize_options
       login_moderator
     end
 

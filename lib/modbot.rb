@@ -37,13 +37,13 @@ module Modbot #ModbotAgent
         @m_password = moderator['pass']
         @subreddits = subreddits
         @conditions = conditions
-        @options = options
+        @options = options if options else @options = {} end
       elsif config == :pass_config
         mbc = YAML::load(File.open("modbot.yml")) #how to find root and where should this be or path specification        
         @m_modrname, @m_password = mbc['moderator']['name'], mbc['moderator']['pass']
         @subreddits = mbc['subreddits']
-        @conditions = mbc['conditions']
-        @options = mbc['options']
+        @conditions = mbc['conditions'] 
+        @options = mbc['options'] if mbc['options'] else @options = {} end 
       end
       @conditions = initialize_conditions(@conditions)
       @subreddits = initialize_subreddits(@subreddits)

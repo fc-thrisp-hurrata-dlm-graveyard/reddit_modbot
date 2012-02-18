@@ -32,7 +32,6 @@ module Modbot #ModbotAgent
     def initialize(config = :pass_arg, moderator = {}, subreddits = [], conditions = [], options = {})
       @l = Logger.new(STDOUT)
       initialize_internet_agent
-      initialize_options
       if config == :pass_arg
         @m_modrname = moderator['name']
         @m_password = moderator['pass']
@@ -46,6 +45,7 @@ module Modbot #ModbotAgent
         @conditions = mbc['conditions'] 
         mbc['options'] ? @options = mbc['options'] : @options = {} 
       end
+      initialize_options
       @conditions = initialize_conditions(@conditions)
       @subreddits = initialize_subreddits(@subreddits)
       login_moderator

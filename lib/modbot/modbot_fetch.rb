@@ -7,8 +7,8 @@ module ModbotFetch
     proceed = compare_timestamp(subreddit.timestamps["#{which_q}_last"], timestamp)
     if proceed
       results = fetch_results(which_q, subreddit, which_to)
-      tf_results = filterby_timestamp(which_q, subreddit, results) unless results < 1
-      store_results(tf_results) unless results < 1
+      tf_results = filterby_timestamp(which_q, subreddit, results)
+      store_results(tf_results)
     else
       subreddit["#{which_q}_recent"] = []
       @l.info "nothing new for #{subreddit.name}::#{which_q}"
@@ -36,6 +36,7 @@ module ModbotFetch
   def fetch_results(which_q, subreddit, which_to)
     results = which_to.call(subreddit.name, subreddit.item_limit) 
     @l.info "#{results.count} results from #{subreddit.name}::#{which_q}"
+    results
   end
 
   #see if time has changed on newest item, filter for only items newer than last check

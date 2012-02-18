@@ -36,7 +36,7 @@ module ModbotFetch
   def fetch_results(which_q, subreddit, which_to)
     results = which_to.call(subreddit.name, subreddit.item_limit) 
     @l.info "#{results.count} results from #{subreddit.name}::#{which_q}"
-    results.nil? results = [] : results = results 
+    results.nil? ? results = [] : results = results 
     results
   end
 

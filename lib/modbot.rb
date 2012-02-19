@@ -30,7 +30,6 @@ module Modbot #ModbotAgent
     QUEUES = [:report, :spam, :submission]
 
     def initialize(config = :pass_arg, moderator = {}, subreddits = [], conditions = [], options = {})
-      @l = Logger.new(STDOUT)
       initialize_internet_agent
       if config == :pass_arg
         @m_modrname = moderator['name']
@@ -46,6 +45,7 @@ module Modbot #ModbotAgent
         mbc['options'] ? @options = mbc['options'] : @options = {} 
       end
       initialize_options
+      initialize_logger
       @conditions = initialize_conditions(@conditions)
       @subreddits = initialize_subreddits(@subreddits)
       login_moderator
@@ -129,10 +129,19 @@ module Modbot #ModbotAgent
 
     def initialize_options
       #cull invalid options
+      acceptable = [:timestamp_offset, :destructive]
       #@timestamp_offset #set an initial time for polling queues, else agent will only work from time it first fetches forward
       @options.each { |k,v| instance_variable_set("@#{k}",v)}
       @timestamp_offset ? @timestamp_offset = (@timestamp_offset * (60*60*24)) : nil
+      @destructive == true||false ? @destructive = @destructive : @destructive = false 
     end
+
+    def intialize_logger
+      @l = Logger.new(STDOUT)
+      @l.datetime_format = "%Y%m%d:%H%M%S"
+      @l.formatter = proc do |severity, datetime, progname, msg|
+        "#{datetime}: #{msg}\n"
+      end
 
     def login_moderator
       login(m_modrname,m_password) unless ( m_modrname.nil? || m_password.nil? )
@@ -173,7 +182,7 @@ module Modbot #ModbotAgent
       fetch
       check #some sort of cascadng proceed condition if fetch yields nothing 
       score#
-      process#       
+      process unless @destructive == false        
     end
 
   end

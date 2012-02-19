@@ -138,9 +138,10 @@ module Modbot #ModbotAgent
 
     def initialize_logger
       @l = Logger.new(STDOUT)
-      @l.datetime_format = "%Y%m%d:%H%M%S"
+      #@l.datetime_format = "%Y%m%d:%H%M%S"
       @l.formatter = proc do |severity, datetime, progname, msg|
-        "#{datetime}: #{msg}\n"
+        "[%s] %s\n" % [ datetime.strtftime("%Y%m%d::%H:%M"), msg ]
+        #"#{datetime}: #{msg}\n"
       end
     end
 

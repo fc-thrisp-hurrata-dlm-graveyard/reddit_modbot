@@ -92,7 +92,7 @@ module Modbot #ModbotAgent
     #process subreddits on intialize
     def initialize_subreddits(what_subreddits)
       z = []
-      time = Time.now.to_f
+      @timestamp_offset ? time = (Time.now.t_of - @timestamps_offset) : time = Time.now.to_f
       what_subreddits.each do |x|
         h = Hashie::Mash.new
         h.name, h.report_threshold, h.spam_threshold, h.submission_threshold, h.item_limit = x[0], x[1], x[2], x[3], x[4]
@@ -132,10 +132,6 @@ module Modbot #ModbotAgent
       #@timestamp_offset #set an initial time for polling queues, else agent will only work from time it first fetches forward
       @options.each { |k,v| instance_variable_set("@#{k}",v)}
       @timestamp_offset ? @timestamp_offset = @timestamp_offset * (60*60*24) : nil
-    end
-
-    def timestamps_offset
-      @timestamp_offset
     end
 
     def login_moderator

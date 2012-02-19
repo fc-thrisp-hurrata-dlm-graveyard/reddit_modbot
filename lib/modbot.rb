@@ -92,11 +92,12 @@ module Modbot #ModbotAgent
     #process subreddits on intialize
     def initialize_subreddits(what_subreddits)
       z = []
+      time = Time.now.to_f
       what_subreddits.each do |x|
         h = Hashie::Mash.new
         h.name, h.report_threshold, h.spam_threshold, h.submission_threshold, h.item_limit = x[0], x[1], x[2], x[3], x[4]
         h.timestamps = Hashie::Mash.new
-        QUEUES.each {|q| h.timestamps["#{q}_last"] = Time.now.to_f}
+        QUEUES.each {|q| h.timestamps["#{q}_last"] = time}
         z << h
       end
       z

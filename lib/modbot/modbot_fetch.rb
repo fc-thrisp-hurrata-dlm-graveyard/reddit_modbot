@@ -15,14 +15,16 @@ module ModbotFetch
     end
   end
 
+  #get the timestamp of most recent item in the queue
   def get_time_recent(which_q, subreddit, which_to)
     result = which_to.call(subreddit.name, 1)
     result[0].nil? ? time = Time.now.to_f : time = result[0].timestamp 
     time 
   end
 
-  def compare_timestamp(subreddit_timestamp, timestamp)
-    subreddit_timestamp <= timestamp
+  #compare the timestamp of the most recent item with most recent recorded for subreddit
+  def compare_timestamp(subreddit_last, time_recent)
+    subreddit_timestamp <= time_recent
   end
 
   #go to reddit for results
@@ -33,7 +35,7 @@ module ModbotFetch
     results
   end
 
-  #see if time has changed on newest item, filter for only items newer than last check
+  #filter for only items newer than last check
   def filterby_timestamp(which_q, subreddit, results)
     if results[0].nil? || results.empty?#obvious screwy logic is screwy, but I'll get it later :/
       results = results

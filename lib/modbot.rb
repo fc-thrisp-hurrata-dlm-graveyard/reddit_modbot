@@ -128,8 +128,8 @@ module Modbot #ModbotAgent
     end
 
     def initialize_options
-      #cull invalid options
       acceptable = [:timestamp_offset, :destructive]
+      #cull invalid options
       #@timestamp_offset #set an initial time for polling queues, else agent will only work from time it first fetches forward
       @options.each { |k,v| instance_variable_set("@#{k}",v)}
       @timestamp_offset ? @timestamp_offset = (@timestamp_offset * (60*60*24)) : nil

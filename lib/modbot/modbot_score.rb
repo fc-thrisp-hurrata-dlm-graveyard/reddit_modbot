@@ -4,10 +4,14 @@ module ModbotScore
     input.select { |x| x[0] == selection }.collect {|x,y| y}.inject(:+).to_f
   end
 
+  def formatted_item_verdict(item_verdict)
+    item_verdict.select {|x| x[0] == :remove || x[0] == :approve }
+  end
+
   def score_results(results_set)
     results_set.each do |item|
       item.score = score_verdict(item.verdict, :approve) / score_verdict(item.verdict, :remove)
-      @l.info "#{item.verdict} yields a score of #{item.score} for item #{item.fullid}"
+      @l.info "#{formatted_item_verdict(item.verdict)} yields a score of #{item.score} for item #{item.fullid}"
     end
   end
 

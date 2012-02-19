@@ -134,6 +134,10 @@ module Modbot #ModbotAgent
       @timestamp_offset ? @timestamp_offset = @timestamp_offset * (60*60*24) : nil
     end
 
+    def timestamps_offset
+      @timestamps_offset
+    end
+
     def login_moderator
       login(m_modrname,m_password) unless ( m_modrname.nil? || m_password.nil? )
       @uh = get_current_user(m_modrname).uh

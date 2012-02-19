@@ -136,7 +136,7 @@ module Modbot #ModbotAgent
       @destructive == true||false ? @destructive = @destructive : @destructive = false 
     end
 
-    def intialize_logger
+    def initialize_logger
       @l = Logger.new(STDOUT)
       @l.datetime_format = "%Y%m%d:%H%M%S"
       @l.formatter = proc do |severity, datetime, progname, msg|

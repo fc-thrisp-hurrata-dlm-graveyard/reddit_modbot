@@ -64,6 +64,8 @@ module RedditWrap
       y
     rescue
       @l.info "problem with getting user #{name} information"
+      y.name, y.created, y.link_karma, y.comment_karma, y.user_age, y.karma_ratio = name, Time.now.to_f, 0, 0, 0, 0
+      y
     end 
   end
 

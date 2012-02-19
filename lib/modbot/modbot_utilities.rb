@@ -18,8 +18,4 @@ module ModbotUtilities
     c.compact.flatten.uniq
   end
 
-  def relevant_conditions(subject)
-    current_conditions.select { |x| x.subject == subject } 
-  end
-
 end

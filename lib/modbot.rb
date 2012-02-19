@@ -111,7 +111,7 @@ module Modbot #ModbotAgent
         h.subject, h.attribute, h.query, h.action = x[0].to_sym, x[1].to_sym, x[2].to_sym, x[4].to_sym
         h.weight = x[5].to_f || 1.to_f
         h.what = process_what(x[3])
-        #h.scope = ## per subreddit / global conditions
+        x[6].nil? ? h.scope = "global" : h.scope = x[6]
         case h.query
         when :matches
           h.what = Regexp.union(h.what)
@@ -133,10 +133,6 @@ module Modbot #ModbotAgent
       @options.each { |k,v| instance_variable_set("@#{k}",v)}
       @timestamp_offset ? @timestamp_offset = (@timestamp_offset * (60*60*24)) : nil
     end
-
-    #def timestamp_offset
-    #  @timestamp_offset
-    #end
 
     def login_moderator
       login(m_modrname,m_password) unless ( m_modrname.nil? || m_password.nil? )
@@ -161,6 +157,7 @@ module Modbot #ModbotAgent
     #score the current by q 
     def score(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
+        @subreddit = s.name.to_sym
         queues.each { |x| score_results(s["#{x}_recent"]) } unless queues.nil?
       end
     end

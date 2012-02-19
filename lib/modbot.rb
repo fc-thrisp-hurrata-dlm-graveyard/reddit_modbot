@@ -142,6 +142,7 @@ module Modbot #ModbotAgent
       @l.formatter = proc do |severity, datetime, progname, msg|
         "#{datetime}: #{msg}\n"
       end
+    end
 
     def login_moderator
       login(m_modrname,m_password) unless ( m_modrname.nil? || m_password.nil? )

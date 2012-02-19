@@ -12,13 +12,13 @@ module ModbotCheck
   #Check a results set
   def check_results(results_set)
     results_set.each { |i| check_conditions(i) } unless results_set.empty?
-    @l.info "all conditions checked for result set #@subreddit"
+    @l.info "all conditions checked from this result set for #{@subreddit}"
   end
 
   #Checks an item against a set of (relevant) conditions.
   def check_conditions(item)
     conditions = relevant_conditions(item.kind.to_sym)
-    conditions.each do |c| unless conditions.empty? 
+    conditions.each do |c| #unless conditions.empty? 
       check_condition(c, item)
       @l.info "condition #{[c.subject, c.attribute, c.query, c.what, c.action]} checked"
     end

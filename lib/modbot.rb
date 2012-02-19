@@ -150,6 +150,7 @@ module Modbot #ModbotAgent
     #check the current by q 
     def check(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
+        @subreddit = s.name.to_sym
         queues.each { |x| check_results(s["#{x}_recent"]) } unless queues.nil?
       end
     end
@@ -157,7 +158,6 @@ module Modbot #ModbotAgent
     #score the current by q 
     def score(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
-        @subreddit = s.name.to_sym
         queues.each { |x| score_results(s["#{x}_recent"]) } unless queues.nil?
       end
     end

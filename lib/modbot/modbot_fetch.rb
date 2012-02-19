@@ -24,7 +24,7 @@ module ModbotFetch
 
   #compare the timestamp of the most recent item with most recent recorded for subreddit
   def compare_timestamp(subreddit_last, time_recent)
-    subreddit_timestamp <= time_recent
+    subreddit_last <= time_recent
   end
 
   #go to reddit for results

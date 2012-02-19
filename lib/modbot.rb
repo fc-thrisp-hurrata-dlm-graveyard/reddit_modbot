@@ -129,8 +129,9 @@ module Modbot #ModbotAgent
 
     def initialize_options
       #cull invalid options
-      #@agent_start_time#set an initial time for polling queues, else agent will only work from time it first fetches forward
+      #@timestamp_offset #set an initial time for polling queues, else agent will only work from time it first fetches forward
       @options.each { |k,v| instance_variable_set("@#{k}",v)}
+      @timestamp_offset ? @timestamp_offset = @timestamp_offset * (60*60*24) : nil
     end
 
     def login_moderator

@@ -14,6 +14,7 @@ module ModbotCheck
     results_set.each { |i| check_conditions(i) } unless results_set.empty?
     @l.info "all conditions checked for each item from this result set for #@scope"
     results_set.select {|x| x.keep == true}
+    results_set
   end
 
   #Checks an item against a set of (relevant) conditions.

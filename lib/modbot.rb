@@ -4,8 +4,10 @@ require "modbot/modbot_fetch"
 require "modbot/modbot_check"
 require "modbot/modbot_score"
 require "modbot/modbot_process"
+require "modbot/modbot_alerts"
 require "modbot/modbot_utilities"
 require "logger"
+require "modbot/result_set"
 
 #module Modbot
 #  autoload :ModbotAgent, '' 
@@ -22,7 +24,8 @@ module Modbot #ModbotAgent
     include ModbotFetch
     include ModbotCheck
     include ModbotScore
-    include ModbotProcess 
+    include ModbotProcess
+    include ModbotAlerts
     include ModbotUtilities
 
     attr_accessor :moderator, :subreddits, :conditions

@@ -11,14 +11,6 @@ module ModbotProcess
     end
     return action
   end
-
-  def track_alerts(item)
-    perform_action(:alert, item) if item.verdict.count {|x| x == :alert } >= 1 
-  end
-
-  def perform_alert(who=self.m_modrname, alert_type=:default, contents="nothing")
-    send_reddit_message(who, "#{alert_type} alert from #{self.to_s}", contents)
-  end
        
   def perform_action(action, item)
     case action
@@ -38,6 +30,7 @@ module ModbotProcess
   end
 
   def process_results(results_set)
+    #check_alerts("#{which_q}_threshold".to_sym, results.count, subreddit)
     results_set.each do |item|
       track_alerts(item)
       action = analyze_score(item)

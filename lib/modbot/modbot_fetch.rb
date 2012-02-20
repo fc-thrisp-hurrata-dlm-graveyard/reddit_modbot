@@ -55,7 +55,6 @@ module ModbotFetch
       subreddit["#{which_q}_recent"] = []
       @l.info "nothing to report, #{subreddit.name}::#{which_q} is empty" 
     else
-      #check_alerts("#{which_q}_threshold".to_sym, results.count, subreddit)
       subreddit["#{which_q}_recent"] = results
       @l.info "#{results.count} new items from #{subreddit.name}::#{which_q} to check"
     end

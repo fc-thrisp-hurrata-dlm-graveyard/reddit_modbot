@@ -1,18 +1,10 @@
 module ModbotCheck
 
-  #Checks for items with more reports than the subreddit's threshold.
-  def check_alerts(subreddit_alert, results_count, subreddit)
-    if subreddit.send(subreddit_alert) <= results_count
-      message = "alert : #{results_count} exceed #{subreddit.send(subreddit_alert)} items for #{subreddit.name}"
-      perform_alert(:conditions, m_modrname, message)
-      @l.info message
-    end
-  end
-
   #Check a results set
   def check_results(results_set)
     results_set.each { |i| check_conditions(i) } unless results_set.empty?
     @scope["#{@scope_which}_recent"] = results_set.select {|x| x.keep == true}
+    @l.info "items triggering no conditions discarded"
     @l.info "all conditions checked for each item from this result set for #{@scope.name}"
   end
 

@@ -160,9 +160,9 @@ module Modbot #ModbotAgent
     def check(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
         queues.each { |x|
-          @scope = s.name.to_sym
-          check_results(s["#{x}_recent"]) 
-          s["#{x}_recent"] = results_set } unless queues.nil?
+          @scope = s
+          @scope_which = x 
+          check_results(s["#{x}_recent"]) } unless queues.nil?
       end
     end
 

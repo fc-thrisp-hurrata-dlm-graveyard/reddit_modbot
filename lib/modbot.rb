@@ -86,7 +86,7 @@ module Modbot #ModbotAgent
     #intialize an agent to handle the internet
     def initialize_internet_agent 
       @internet_agent = Mechanize.new{ |agent| agent.user_agent_alias = 'Mac Safari' }
-      @internet_agent.history_added = Proc.new {sleep 2}
+      @internet_agent.history_added = Proc.new {sleep 3}
     end
 
     #process subreddits on intialize
@@ -111,7 +111,7 @@ module Modbot #ModbotAgent
         h.subject, h.attribute, h.query, h.action = x[0].to_sym, x[1].to_sym, x[2].to_sym, x[4].to_sym
         h.weight = x[5].to_f || 1.to_f
         h.what = process_what(x[3])
-        x[6].nil? ? h.scope = "global" : h.scope = x[6]
+        x[6].nil? ? h.scope = :all_subreddits : h.scope = x[6].to_sym
         case h.query
         when :matches
           h.what = Regexp.union(h.what)
@@ -130,7 +130,8 @@ module Modbot #ModbotAgent
     def initialize_options
       acceptable = [:timestamp_offset, :destructive]
       #cull invalid options
-      #@timestamp_offset #set an initial time for polling queues, else agent will only work from time it first fetches forward
+      #timestamp_offset #set an initial time for polling queues, else agent will only work from time it first fetches forward
+      #destructive      #it true remove and approve items via reddit api, otherwise fetch, check, and score 
       @options.each { |k,v| instance_variable_set("@#{k}",v)}
       @timestamp_offset ? @timestamp_offset = (@timestamp_offset * (60*60*24)) : nil
       @destructive == true||false ? @destructive = @destructive : @destructive = false 

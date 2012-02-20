@@ -2,6 +2,12 @@
 require 'json'
 module RedditWrap
 
+  REDDIT_ROOT = %q[http://www.reddit.com]
+
+  def reddit_route(fragment)
+    "#{REDDIT_ROOT}#{fragment}"
+  end
+
   #http://www.reddit.com/user/#{USER_NAME}/about/.json
   def get_current_user(user)
     h = Hashie::Mash.new
@@ -101,7 +107,7 @@ module RedditWrap
           h.timestamp = yy['data']['created']
           h.id = yy['data']['id']
           h.fullid = yy['data']['name']
-          h.permalink = yy['data']['permalink']
+          h.permalink = reddit_route(yy['data']['permalink'])
           h.author = reddit_user(yy['data']['author'])
           if yy['kind'] == "t1"
             h.kind = "comment"

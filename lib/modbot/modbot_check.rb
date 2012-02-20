@@ -12,13 +12,13 @@ module ModbotCheck
   #Check a results set
   def check_results(results_set)
     results_set.each { |i| check_conditions(i) } unless results_set.empty?
-    @l.info "all conditions checked for each item from this result set for #@scope.name"
+    @l.info "all conditions checked for each item from this result set for #{@scope.name}"
     @scope["#{@scope_which}_last"] = results_set.select {|x| x.keep == true}
   end
 
   #Checks an item against a set of (relevant) conditions.
   def check_conditions(item)
-    conditions = relevant_conditions(item.kind.to_sym)
+    conditions = relevant_conditions(item.kind.to_sym, @scope.name)
     conditions.each do |c| #unless conditions.empty? 
       check_condition(c, item)
       @l.info "condition #{[c.subject, c.attribute, c.query, c.what, c.action]} checked"
@@ -98,11 +98,13 @@ module ModbotCheck
     end
   end
 
-  def relevant_conditions(subject)
-    current_conditions.select { |x| x.subject == subject } 
+  def relevant_conditions(subject, subreddit_scope)
+    c = current_conditions.select { |x| x.subject == subject }
+    cc = c.select { |x| x.scope == :all_subreddits || x.scope == subreddit_scope}
+    cc  
   end
   
   def keep_or_discard(item)
-    item.verdict.select {|x| x[0] == :remove || x[0] == :approve}.count > 1
+    item.verdict.select {|x| x[0] == :remove || x[0] == :approve}.count >= 1
   end 
 end

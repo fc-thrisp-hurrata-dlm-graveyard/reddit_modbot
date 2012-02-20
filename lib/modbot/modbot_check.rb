@@ -12,6 +12,7 @@ module ModbotCheck
   #Check a results set
   def check_results(results_set)
     results_set.each { |i| check_conditions(i) } unless results_set.empty?
+    #discard uninteresting results 
     @l.info "all conditions checked from this result set for #{@subreddit}"
   end
 
@@ -72,14 +73,14 @@ module ModbotCheck
     test = query_test_condition(condition, test_item)
     if test.kind_of?(Integer) || test == true
       item.verdict.unshift([condition.action, condition.weight])
-      test_result = true
-      @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{test_result}, recommend #{condition.action}"
+      item.test_result = true
+      @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{item.test_result}, recommend #{condition.action}"
     elsif test.nil? || test == false
       item.verdict << [:fail, 0]
-      test_result = false
-      @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{test_result}, recommend no action"
+      item.test_result = false
+      @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{item.test_result}, recommend no action"
     else
-      test_result = :failure
+      item.test_result = :failure
       @l.info "#{test_item} ::: test failure or inconclusive"
     end
   end

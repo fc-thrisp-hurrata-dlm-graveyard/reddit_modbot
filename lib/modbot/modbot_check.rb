@@ -12,8 +12,8 @@ module ModbotCheck
   #Check a results set
   def check_results(results_set)
     results_set.each { |i| check_conditions(i) } unless results_set.empty?
-    #discard uninteresting results /need scope  
-    @l.info "all conditions checked for each item from this result set for #{@subreddit}"
+    @l.info "all conditions checked for each item from this result set for #@scope"
+    results_set.select {|x| x.keep == true}
   end
 
   #Checks an item against a set of (relevant) conditions.

@@ -159,8 +159,10 @@ module Modbot #ModbotAgent
     #check the current by q 
     def check(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
-        @subreddit = s.name.to_sym
-        queues.each { |x| check_results(s["#{x}_recent"]) } unless queues.nil?
+        queues.each { |x|
+          @scope = s.name.to_sym
+          check_results(s["#{x}_recent"]) 
+          s["#{x}_recent"] = results_set } unless queues.nil?
       end
     end
 

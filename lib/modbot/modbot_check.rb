@@ -12,8 +12,8 @@ module ModbotCheck
   #Check a results set
   def check_results(results_set)
     results_set.each { |i| check_conditions(i) } unless results_set.empty?
-    #discard uninteresting results 
-    @l.info "all conditions checked from this result set for #{@subreddit}"
+    #discard uninteresting results /need scope  
+    @l.info "all conditions checked for each item from this result set for #{@subreddit}"
   end
 
   #Checks an item against a set of (relevant) conditions.
@@ -23,6 +23,7 @@ module ModbotCheck
       check_condition(c, item)
       @l.info "condition #{[c.subject, c.attribute, c.query, c.what, c.action]} checked"
     end
+    item.keep = keep_or_discard(item)
   end
 
   #Checks an item against a single condition.
@@ -100,5 +101,8 @@ module ModbotCheck
   def relevant_conditions(subject)
     current_conditions.select { |x| x.subject == subject } 
   end
-
+  
+  def keep_or_discard(item)
+    item.verdict.select {|x| x[0] == :remove || x[0] == :approve}.count > 1
+  end 
 end

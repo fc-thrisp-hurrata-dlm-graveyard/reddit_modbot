@@ -73,14 +73,14 @@ module ModbotCheck
     test = query_test_condition(condition, test_item)
     if test.kind_of?(Integer) || test == true
       item.verdict.unshift([condition.action, condition.weight])
-      item.test_result = true
+      test_result = true
       @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{item.test_result}, recommend #{condition.action}"
     elsif test.nil? || test == false
       item.verdict << [:fail, 0]
-      item.test_result = false
-      @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{item.test_result}, recommend no action"
+      test_result = false
+      @l.info "#{test_item} ::: #{condition.query} #{condition.what} ::: #{test_result}, recommend no action"
     else
-      item.test_result = :failure
+      test_result = :failure
       @l.info "#{test_item} ::: test failure or inconclusive"
     end
   end

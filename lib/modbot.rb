@@ -7,7 +7,7 @@ require "modbot/modbot_process"
 require "modbot/modbot_alerts"
 require "modbot/modbot_utilities"
 require "logger"
-require "modbot/result_set"
+require "modbot/result_set"#fold check/score into a class w/enumerable mixin that holds the fetched results and returns values as needed
 
 #module Modbot
 #  autoload :ModbotAgent, '' 

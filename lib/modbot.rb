@@ -130,7 +130,9 @@ module Modbot #ModbotAgent
       #destructive      #it true remove and approve items via reddit api, otherwise fetch, check, and score
       #minimal_author   #poll reddit for author name only; faster but less inforamtion to work with default false
                         #invalidates any condintion relying on extended author information
-      @current_options << @options.each { |k,v| instance_variable_set("@#{k}",v)}
+      @options.each { |k,v| instance_variable_set("@#{k}",v)}
+      @current_options = []
+      @options.each { |x|  @current_options << x }
       @timestamp_offset ? @timestamp_offset = (@timestamp_offset * (60*60*24)) : nil
       @destructive == true||false ? @destructive = @destructive : @destructive = false
       #@minimal_author

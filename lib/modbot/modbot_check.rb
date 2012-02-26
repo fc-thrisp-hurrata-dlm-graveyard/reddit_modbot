@@ -21,18 +21,18 @@ module ModbotCheck
   #Checks an item against a single condition.
   def check_condition(condition, item)
     #refactor with some sort of hash table or would that add unnecessary burden
-    #available_conditions = { author: item.author.name,
-    #                          title: item.title, 
-    #                          body: item.body, 
-    #                          domain: (URI(item.url).host),
-    #                          self_post: item.is_self, 
-    #                          account_age: item.author.user_age,
-    #                          link_karma: item.author.link_karma,
-    #                          comment_karma: item.author.comment_karma,
-    #                          combined_karma: (item.author.link_karma + item.author.comment_karma)}
+    available_conditions = { author: item.author.name,
+                             title: item.title, 
+                             body: item.body, 
+                             domain: (URI(item.url).host),
+                             self_post: item.is_self, 
+                             account_age: item.author.user_age,
+                             link_karma: item.author.link_karma,
+                             comment_karma: item.author.comment_karma,
+                             combined_karma: (item.author.link_karma + item.author.comment_karma)}
     case condition.attribute
     when :author
-      i = item.author.name
+      i = item.author.name;
     when :title
       i = item.title
     when :body
@@ -98,5 +98,6 @@ module ModbotCheck
   
   def keep_or_discard(item)
     item.verdict.select {|x| x[0] == :remove || x[0] == :approve}.count >= 1
-  end 
+  end
+
 end

@@ -1,8 +1,9 @@
 class ResultSet
   include Enumerable
 
-  def initialize(results)
+  def initialize(results, scope)
     @results = results
+    @scope = scope
   end
 
   def each(&block)

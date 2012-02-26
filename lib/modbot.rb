@@ -29,6 +29,7 @@ module Modbot #ModbotAgent
     include ModbotUtilities
 
     attr_accessor :moderator, :subreddits, :conditions
+    attr_reader :internet_agent
 
     QUEUES = [:report, :spam, :submission]
 
@@ -131,13 +132,16 @@ module Modbot #ModbotAgent
     end
 
     def initialize_options
-      acceptable = [:timestamp_offset, :destructive]
+      acceptable = [:timestamp_offset, :destructive, :minimal_author]
       #cull invalid options
       #timestamp_offset #set an initial time for polling queues, else agent will only work from time it first fetches forward
-      #destructive      #it true remove and approve items via reddit api, otherwise fetch, check, and score 
+      #destructive      #it true remove and approve items via reddit api, otherwise fetch, check, and score
+      #minimal_author   #poll reddit for author name only; faster but less inforamtion to work with default false
+                        #invalidates any condintion relying on extended author information
       @options.each { |k,v| instance_variable_set("@#{k}",v)}
       @timestamp_offset ? @timestamp_offset = (@timestamp_offset * (60*60*24)) : nil
-      @destructive == true||false ? @destructive = @destructive : @destructive = false 
+      @destructive == true||false ? @destructive = @destructive : @destructive = false
+      #@minimal_author
     end
 
     def initialize_logger
@@ -166,27 +170,27 @@ module Modbot #ModbotAgent
         queues.each { |x|
           @scope = s
           @scope_which = x 
-          check_results(s["#{x}_recent"]) } unless queues.nil?
+          check_results(s["#{x}_recent"]) }
       end
     end
 
     #score the current by q 
     def score(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
-        queues.each { |x| score_results(s["#{x}_recent"]) } unless queues.nil?
+        queues.each { |x| score_results(s["#{x}_recent"]) }
       end
     end
 
     #process the current by q
     def process(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
-        queues.each { |x| process_results(s["#{x}_recent"]) } unless queues.nil?
+        queues.each { |x| process_results(s["#{x}_recent"]) }
       end
     end
 
     def manage_subreddits
       fetch
-      check #some sort of cascadng proceed condition if fetch yields nothing 
+      check #some sort of cascading proceed condition if fetch yields nothing 
       score#
       process unless @destructive == false        
     end

@@ -59,9 +59,9 @@ module Modbot #ModbotAgent
       "reddit_modbot for reddits #{current_subreddits_names.join(",")} (moderator: #@m_modrname)"
     end
 
-    def internet_agent
-      @internet_agent
-    end
+    #def internet_agent
+    #  @internet_agent
+    #end
 
     def m_modrname
       @m_modrname

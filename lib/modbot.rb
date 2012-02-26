@@ -29,7 +29,7 @@ module Modbot #ModbotAgent
     include ModbotUtilities
 
     attr_accessor :moderator, :subreddits, :conditions
-    attr_reader :internet_agent
+    attr_reader :internet_agent, :m_modrname, :m_password, :current_options
 
     QUEUES = [:report, :spam, :submission]
 
@@ -57,18 +57,6 @@ module Modbot #ModbotAgent
 
     def to_s
       "reddit_modbot for reddits #{current_subreddits_names.join(",")} (moderator: #@m_modrname)"
-    end
-
-    #def internet_agent
-    #  @internet_agent
-    #end
-
-    def m_modrname
-      @m_modrname
-    end
-
-    def m_password
-      @m_password
     end
  
     def m_uh
@@ -131,14 +119,18 @@ module Modbot #ModbotAgent
       z
     end
 
+    def available_options
+      @whitelisted_options.join(", ")
+    end
+
     def initialize_options
-      acceptable = [:timestamp_offset, :destructive, :minimal_author]
+      @whitelisted_options = [:timestamp_offset, :destructive, :minimal_author]
       #cull invalid options
       #timestamp_offset #set an initial time for polling queues, else agent will only work from time it first fetches forward
       #destructive      #it true remove and approve items via reddit api, otherwise fetch, check, and score
       #minimal_author   #poll reddit for author name only; faster but less inforamtion to work with default false
                         #invalidates any condintion relying on extended author information
-      @options.each { |k,v| instance_variable_set("@#{k}",v)}
+      @current_options << @options.each { |k,v| instance_variable_set("@#{k}",v)}
       @timestamp_offset ? @timestamp_offset = (@timestamp_offset * (60*60*24)) : nil
       @destructive == true||false ? @destructive = @destructive : @destructive = false
       #@minimal_author

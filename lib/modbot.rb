@@ -131,9 +131,9 @@ module Modbot #ModbotAgent
       #minimal_author   #poll reddit for author name only; faster but less informtion to work with, default false
                         #invalidates any condition relying on extended author information
       @options.each { |k,v| instance_variable_set("@#{k}",v)}
-      @current_options[:timestamp_offset] = @options.include(:timestamp_offset) ? @timestamp_offset = (@timestamp_offset * (60*60*24)) : 0
-      @current_options[:destructive] = @options.include(:destructive) ? @destructive = @destructive : @destructive = false
-      @current_options[:minimal_author] = @options.include(:minimal_author) ? @minimal_author = @minimal_author : @minimal_author = false
+      @current_options[:timestamp_offset] = @options.include?(:timestamp_offset) ? @timestamp_offset = (@timestamp_offset * (60*60*24)) : 0
+      @current_options[:destructive] = @options.include?(:destructive) ? @destructive = @destructive : @destructive = false
+      @current_options[:minimal_author] = @options.include?(:minimal_author) ? @minimal_author = @minimal_author : @minimal_author = false
     end
 
     def initialize_logger

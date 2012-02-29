@@ -21,26 +21,26 @@ module ModbotCheck
   #Checks an item against a single condition.
   def check_condition(condition, item)
     #refactor with some sort of hash table or would that add unnecessary burden
-    available_conditions = { author: item.author.name,
-                             title: item.title, 
-                             body: item.body, 
-                             domain: (URI(item.url).host),
-                             self_post: item.is_self, 
-                             account_age: item.author.user_age,
-                             link_karma: item.author.link_karma,
-                             comment_karma: item.author.comment_karma,
-                             combined_karma: (item.author.link_karma + item.author.comment_karma)}
-    available_conditions.each { |k,v|
-      i = v if condition.attribute == k }
-    #case condition.attribute
-    #when :author
-    #  i = item.author.name;
-    #when :title
-    #  i = item.title
-    #when :body
-    #  i = item.body
-    #when :domain
-    #  i = URI(item.url).host
+    #available_conditions = { author: item.author.name,
+    #                         title: item.title, 
+    #                         body: item.body, 
+    #                         domain: (URI(item.url).host),
+    #                         self_post: item.is_self, 
+    #                         account_age: item.author.user_age,
+    #                         link_karma: item.author.link_karma,
+    #                         comment_karma: item.author.comment_karma,
+    #                         combined_karma: (item.author.link_karma + item.author.comment_karma)}
+    #available_conditions.each { |k,v|
+    #  i = v if condition.attribute == k }
+    case condition.attribute
+    when :author
+      i = item.author.name;
+    when :title
+      i = item.title
+    when :body
+      i = item.body
+    when :domain
+      i = URI(item.url).host
     #when :url #not even close, will take some tweaking, do not use right now
     #  i = []
     #  item.url.each do |ii|
@@ -48,17 +48,17 @@ module ModbotCheck
     #    i << [ii.host, ii.path].reject { |s| s.empty? }
     #  end
     #  i.flatten
-    #when :self_post
-    #  i = item.is_self
-    #when :account_age
-    #  i = item.author.user_age
-    #when :link_karma
-    #  i = item.author.link_karma
-    #when :comment_karma
-    #  i = item.author.comment_karma
-    #when :combined_karma
-    #  i = (item.author.link_karma + item.author.comment_karma)
-    #end
+    when :self_post
+      i = item.is_self
+    when :account_age
+      i = item.author.user_age
+    when :link_karma
+      i = item.author.link_karma
+    when :comment_karma
+      i = item.author.comment_karma
+    when :combined_karma
+      i = (item.author.link_karma + item.author.comment_karma)
+    end
     @l.info "#{i} to be checked if #{condition.query} #{condition.attribute}"
     test_condition(condition, item, i)
   end

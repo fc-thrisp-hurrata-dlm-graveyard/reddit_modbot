@@ -133,7 +133,7 @@ module Modbot #ModbotAgent
       @options.each { |k,v| 
                       instance_variable_set("@#{k}",v)
                       @current_options[k.to_sym] = v}
-      @timestamp_offset = (@timestamp_offset * (60*60*24)) : 0
+      @timestamp_offset ? @timestamp_offset = (@timestamp_offset * (60*60*24)) : 0
       #@destructive = @destructive : @destructive = false
       #@minimal_author = @minimal_author : @minimal_author = false
     end

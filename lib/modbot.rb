@@ -124,16 +124,18 @@ module Modbot #ModbotAgent
     end
 
     def initialize_options
-      @whitelisted_options, @current_options  = [:timestamp_offset, :destructive, :minimal_author], []
+      @whitelisted_options, @current_options  = [:timestamp_offset, :destructive, :minimal_author], {}
       #cull invalid options
       #timestamp_offset #set an initial time for polling queues, else agent will only work from time it first fetches forward
       #destructive      #if true, remove and approve items via reddit api; otherwise fetch, check, and score
       #minimal_author   #poll reddit for author name only; faster but less informtion to work with, default false
                         #invalidates any condition relying on extended author information
-      @options.each { |k,v| instance_variable_set("@#{k}",v)}
-      @current_options[:timestamp_offset] = @options.include?(:timestamp_offset) ? @timestamp_offset = (@timestamp_offset * (60*60*24)) : 0
-      @current_options[:destructive] = @options.include?(:destructive) ? @destructive = @destructive : @destructive = false
-      @current_options[:minimal_author] = @options.include?(:minimal_author) ? @minimal_author = @minimal_author : @minimal_author = false
+      @options.each { |k,v| 
+                      instance_variable_set("@#{k}",v)
+                      @current_options[k.to_sym] = v}
+      @options.include?(:timestamp_offset) ? @timestamp_offset = (@timestamp_offset * (60*60*24)) : 0
+      @options.include?(:destructive) ? @destructive = @destructive : @destructive = false
+      @options.include?(:minimal_author) ? @minimal_author = @minimal_author : @minimal_author = false
     end
 
     def initialize_logger

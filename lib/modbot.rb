@@ -138,6 +138,10 @@ module Modbot #ModbotAgent
       @options.include?(:minimal_author) ? @minimal_author = @minimal_author : @minimal_author = false
     end
 
+    def timestamp_offset
+      @timestamp_offset
+    end
+
     def initialize_logger
       @l = Logger.new(STDOUT)
       @l.formatter = proc do |severity, datetime, progname, msg|

@@ -28,7 +28,7 @@ module Modbot #ModbotAgent
     include ModbotAlerts
     include ModbotUtilities
 
-    attr_accessor :moderator, :subreddits, :conditions
+    attr_accessor :moderator, :subreddits, :conditions, :current_options
     attr_reader :internet_agent, :m_modrname, :m_password, :current_options#out of development, mostly unnecessary
 
     QUEUES = [:report, :spam, :submission]

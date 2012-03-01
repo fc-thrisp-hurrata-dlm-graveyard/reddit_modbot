@@ -129,7 +129,7 @@ module Modbot #ModbotAgent
     # minimal_author   #poll reddit for author name only; faster but less informtion to work with, default false
     #                   #invalidates any condition relying on extended author information
     def initialize_options(options)
-      options.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+      options = options.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
       n_options = options.select { |k,v| WHITELISTED_OPTIONS.include?(k) }
       @timestamp_offset = n_options.fetch(:timestamp_offset, 0)*(60*60*24)
       @destructive = n_options.fetch(:destructive, false)

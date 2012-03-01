@@ -48,7 +48,7 @@ module Modbot #ModbotAgent
         @conditions = mbc['conditions'] 
         mbc['options'] ? @options = mbc['options'] : @options = {} 
       end
-      initialize_options(options)
+      initialize_options(@options)
       initialize_logger
       @conditions = initialize_conditions(@conditions)
       @subreddits = initialize_subreddits(@subreddits)

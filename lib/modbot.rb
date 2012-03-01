@@ -130,7 +130,7 @@ module Modbot #ModbotAgent
     def initialize_options(options)
       @whitelisted_options, @current_options  = [:timestamp_offset, :destructive, :minimal_author], {}
       n_options = options.select { |k,v| @current_options.include?(k) }
-      @current_options[:timestamps_offset] = @timestamp_offset = n_options.fetch(:timestamp_offset, 0)*(60*60*24)
+      @current_options[:timestamps_offset] = @timestamp_offset = n_options.fetch(:timestamps_offset, 0)*(60*60*24)
       @current_options[:destructive] = @destructive = n_options.fetch(:destructive, false)
       @current_options[:minimal_author] = @minimal_author = n_options.fetch(:minimal_author, false)
     end

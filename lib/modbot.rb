@@ -48,7 +48,7 @@ module Modbot #ModbotAgent
         @conditions = mbc['conditions'] 
         mbc['options'] ? @options = mbc['options'] : @options = {} 
       end
-      initialize_options
+      initialize_options(options)
       initialize_logger
       @conditions = initialize_conditions(@conditions)
       @subreddits = initialize_subreddits(@subreddits)
@@ -123,23 +123,16 @@ module Modbot #ModbotAgent
       @whitelisted_options.join(", ")
     end
 
-    def initialize_options
+    # timestamp_offset #set an initial time for polling queues, else agent will only work from time it first fetches forward
+    # destructive      #if true, remove and approve items via reddit api; otherwise fetch, check, and score
+    # minimal_author   #poll reddit for author name only; faster but less informtion to work with, default false
+    #                   #invalidates any condition relying on extended author information
+    def initialize_options(options)
       @whitelisted_options, @current_options  = [:timestamp_offset, :destructive, :minimal_author], {}
-      #cull invalid options
-      #timestamp_offset #set an initial time for polling queues, else agent will only work from time it first fetches forward
-      #destructive      #if true, remove and approve items via reddit api; otherwise fetch, check, and score
-      #minimal_author   #poll reddit for author name only; faster but less informtion to work with, default false
-                        #invalidates any condition relying on extended author information
-      @options.each { |k,v| 
-                      instance_variable_set("@#{k}",v)
-                      @current_options[k.to_sym] = v}
-      @timestamp_offset ? @timestamp_offset = (@timestamp_offset * (60*60*24)) : 0
-      #@destructive = @destructive : @destructive = false
-      #@minimal_author = @minimal_author : @minimal_author = false
-    end
-
-    def timestamp_offset
-      @timestamp_offset
+      n_options = options.select { |k,v| @current_options.include?(k) }
+      @current_options[:timestamps_offset] = @timestamp_offset = n_options.fetch(:timestamp_offset, 0)*(60*60*24)
+      @current_options[:destructive] = @destructive = n_options.fetch(:destructive, false)
+      @current_options[:minimal_author] = @minimal_author = n_options.fetch(:minimal_author, false)
     end
 
     def initialize_logger
@@ -190,7 +183,7 @@ module Modbot #ModbotAgent
       fetch
       check #some sort of cascading proceed condition if fetch yields nothing 
       score#
-      process unless @destructive == false        
+      process if @destructive#true       
     end
 
   end

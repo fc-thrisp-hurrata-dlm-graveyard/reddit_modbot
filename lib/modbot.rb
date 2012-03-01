@@ -30,10 +30,10 @@ module Modbot #ModbotAgent
 
     attr_accessor :moderator, :subreddits, :conditions
     attr_reader :internet_agent, :m_modrname, :m_password
-    attr_reader :timestamps_offset, :destructive, :minimal_author
+    attr_reader :timestamp_offset, :destructive, :minimal_author
 
     QUEUES = [:report, :spam, :submission]
-    WHITELISTED_OPTIONS = [:timestamps_offset, :destructive, :minimal_author]
+    WHITELISTED_OPTIONS = [:timestamp_offset, :destructive, :minimal_author]
 
     def initialize(config = :pass_arg, moderator = {}, subreddits = [], conditions = [], options = {})
       initialize_internet_agent
@@ -129,8 +129,9 @@ module Modbot #ModbotAgent
     # minimal_author   #poll reddit for author name only; faster but less informtion to work with, default false
     #                   #invalidates any condition relying on extended author information
     def initialize_options(options)
-      n_options = options.select { |k,v| WHITELISTED_OPTIONS.include?(k.to_sym) }
-      @timestamp_offset = n_options.fetch(:timestamps_offset, 0)*(60*60*24)
+      options.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+      n_options = options.select { |k,v| WHITELISTED_OPTIONS.include?(k) }
+      @timestamp_offset = n_options.fetch(:timestamp_offset, 0)*(60*60*24)
       @destructive = n_options.fetch(:destructive, false)
       @minimal_author = n_options.fetch(:minimal_author, false)
     end

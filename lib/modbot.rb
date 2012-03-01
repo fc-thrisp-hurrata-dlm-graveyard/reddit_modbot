@@ -28,10 +28,12 @@ module Modbot #ModbotAgent
     include ModbotAlerts
     include ModbotUtilities
 
-    attr_accessor :moderator, :subreddits, :conditions, :current_options
-    attr_reader :internet_agent, :m_modrname, :m_password, :current_options#out of development, mostly unnecessary
+    attr_accessor :moderator, :subreddits, :conditions
+    attr_reader :internet_agent, :m_modrname, :m_password
+    attr_reader :timestamps_offset, :destructive, :minimal_author
 
     QUEUES = [:report, :spam, :submission]
+    WHITELISTED_OPTIONS = [:timestamps_offset, :destructive, :minimal_author]
 
     def initialize(config = :pass_arg, moderator = {}, subreddits = [], conditions = [], options = {})
       initialize_internet_agent
@@ -40,7 +42,6 @@ module Modbot #ModbotAgent
         @m_password = moderator['pass']
         @subreddits = subreddits
         @conditions = conditions
-        #options ? @options = options : @options = {}
       elsif config == :pass_config
         mbc = YAML::load(File.open("modbot.yml")) #how to find root and where should this be or path specification        
         @m_modrname, @m_password = mbc['moderator']['name'], mbc['moderator']['pass']
@@ -120,7 +121,7 @@ module Modbot #ModbotAgent
     end
 
     def available_options
-      @whitelisted_options.join(", ")
+      WHITELISTED_OPTIONS.join(", ")
     end
 
     # timestamp_offset #set an initial time for polling queues, else agent will only work from time it first fetches forward
@@ -128,11 +129,10 @@ module Modbot #ModbotAgent
     # minimal_author   #poll reddit for author name only; faster but less informtion to work with, default false
     #                   #invalidates any condition relying on extended author information
     def initialize_options(options)
-      @whitelisted_options, @current_options  = [:timestamps_offset, :destructive, :minimal_author], {}
-      n_options = options.select { |k,v| @whitelisted_options.include?(k) }
-      @current_options[:timestamps_offset] = @timestamp_offset = n_options.fetch(:timestamps_offset, 0)*(60*60*24)
-      @current_options[:destructive] = @destructive = n_options.fetch(:destructive, false)
-      @current_options[:minimal_author] = @minimal_author = n_options.fetch(:minimal_author, false)
+      n_options = options.select { |k,v| WHITELISTED_OPTIONS.include?(k) }
+      @timestamp_offset = n_options.fetch(:timestamps_offset, 0)*(60*60*24)
+      @destructive = n_options.fetch(:destructive, false)
+      @minimal_author = n_options.fetch(:minimal_author, false)
     end
 
     def initialize_logger

@@ -30,7 +30,6 @@ module Modbot #ModbotAgent
 
     attr_accessor :moderator, :subreddits, :conditions
     attr_reader :internet_agent, :m_modrname, :m_password, :current_options
-    #attr_reader :timestamp_offset, :destructive, :minimal_author
 
     QUEUES = [:report, :spam, :submission]
 
@@ -134,17 +133,13 @@ module Modbot #ModbotAgent
     # timestamp_offset #set an initial time for polling queues, else agent will only work from time it first fetches forward
     # destructive      #if true, remove and approve items via reddit api; otherwise fetch, check, and score
     # minimal_author   #poll reddit for author name only; faster but less informtion to work with, default false
-    #                   #invalidates any condition relying on extended author information
+    #                  #invalidates any condition relying on extended author information
     def initialize_options(options)
       options = options.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+      options[:timestamp_offset] = options[:timestamp_offset]*(60*60*24)
       @current_options = {}
       @@whitelisted_options.each {|k, v| @current_options[k] = options[k] || v}
       @current_options
-      #options = options.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
-      #n_options = options.select { |k,v| WHITELISTED_OPTIONS.include?(k) }
-      #@timestamp_offset = n_options.fetch(:timestamp_offset, 0)*(60*60*24)
-      #@destructive = n_options.fetch(:destructive, false)
-      #@minimal_author = n_options.fetch(:minimal_author, false)
     end
 
     def initialize_logger

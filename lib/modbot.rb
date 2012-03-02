@@ -33,7 +33,6 @@ module Modbot #ModbotAgent
     #attr_reader :timestamp_offset, :destructive, :minimal_author
 
     QUEUES = [:report, :spam, :submission]
-    #WHITELISTED_OPTIONS = [:timestamp_offset, :destructive, :minimal_author]
 
     def initialize(config = :pass_arg, moderator = {}, subreddits = [], conditions = [], options = {})
       initialize_internet_agent
@@ -137,6 +136,7 @@ module Modbot #ModbotAgent
     # minimal_author   #poll reddit for author name only; faster but less informtion to work with, default false
     #                   #invalidates any condition relying on extended author information
     def initialize_options(options)
+      options = options.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
       @current_options = {}
       @@whitelisted_options.each {|k, v| @current_options[k] = options[k] || v}
       @current_options

@@ -33,7 +33,7 @@ module Modbot #ModbotAgent
     attr_reader :timestamp_offset, :destructive, :minimal_author
 
     QUEUES = [:report, :spam, :submission]
-    WHITELISTED_OPTIONS = [:timestamp_offset, :destructive, :minimal_author]
+    #WHITELISTED_OPTIONS = [:timestamp_offset, :destructive, :minimal_author]
 
     def initialize(config = :pass_arg, moderator = {}, subreddits = [], conditions = [], options = {})
       initialize_internet_agent
@@ -127,7 +127,9 @@ module Modbot #ModbotAgent
     end
 
     def available_options
-      @@whitelisted_options.join(", ")
+      ao = []
+      @@whitelisted_options.each_key{|k| ao << k }.
+      ao.join(", ")
     end
 
     # timestamp_offset #set an initial time for polling queues, else agent will only work from time it first fetches forward
@@ -135,6 +137,9 @@ module Modbot #ModbotAgent
     # minimal_author   #poll reddit for author name only; faster but less informtion to work with, default false
     #                   #invalidates any condition relying on extended author information
     def initialize_options(options)
+      @@whitelisted_options.keys.each do |o|
+        self.define_method(o) { return @current_options[o] rescue nil}
+      end
       @current_options = {}
       @@whitelisted_options.each {|k, v| @current_options[k] = options[k] || v}
       @current_options

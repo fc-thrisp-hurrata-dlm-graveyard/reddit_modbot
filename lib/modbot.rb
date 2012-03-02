@@ -28,8 +28,8 @@ module Modbot #ModbotAgent
     include ModbotAlerts
     include ModbotUtilities
 
-    attr_accessor :moderator, :subreddits, :conditions, :current_options
-    attr_reader :internet_agent, :m_modrname, :m_password
+    attr_accessor :moderator, :subreddits, :conditions
+    attr_reader :internet_agent, :m_modrname, :m_password, :current_options
     #attr_reader :timestamp_offset, :destructive, :minimal_author
 
     QUEUES = [:report, :spam, :submission]
@@ -119,7 +119,7 @@ module Modbot #ModbotAgent
       z
     end
 
-    @@whitelisted_options= {timestamps_offset:0, destructive:false, minimal_author:false}
+    @@whitelisted_options= {timestamp_offset:0, destructive:false, minimal_author:false}
     
     @@whitelisted_options.keys.each do |o|
       define_method(o) { return @current_options[o] rescue nil}

@@ -128,7 +128,7 @@ module Modbot #ModbotAgent
 
     def available_options
       ao = []
-      @@whitelisted_options.each_key{|k| ao << k }.
+      @@whitelisted_options.each_key{|k| ao << k }
       ao.join(", ")
     end
 
@@ -137,9 +137,6 @@ module Modbot #ModbotAgent
     # minimal_author   #poll reddit for author name only; faster but less informtion to work with, default false
     #                   #invalidates any condition relying on extended author information
     def initialize_options(options)
-      @@whitelisted_options.keys.each do |o|
-        self.define_method(o) { return @current_options[o] rescue nil}
-      end
       @current_options = {}
       @@whitelisted_options.each {|k, v| @current_options[k] = options[k] || v}
       @current_options

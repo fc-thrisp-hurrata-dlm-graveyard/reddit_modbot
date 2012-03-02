@@ -28,8 +28,8 @@ module Modbot #ModbotAgent
     include ModbotAlerts
     include ModbotUtilities
 
-    attr_accessor :moderator, :subreddits, :conditions
-    attr_reader :internet_agent, :m_modrname, :m_password, :current_options
+    attr_accessor :moderator, :subreddits, :conditions, :current_options
+    attr_reader :internet_agent, :m_modrname, :m_password
     attr_reader :timestamp_offset, :destructive, :minimal_author
 
     QUEUES = [:report, :spam, :submission]
@@ -121,6 +121,10 @@ module Modbot #ModbotAgent
     end
 
     @@whitelisted_options= {timestamps_offset:0, destructive:false, minimal_author:false}
+    
+    @@whitelisted_options.keys.each do |o|
+      define_method(o) { return @current_options[o] rescue nil}
+    end
 
     def available_options
       @@whitelisted_options.join(", ")
@@ -131,9 +135,6 @@ module Modbot #ModbotAgent
     # minimal_author   #poll reddit for author name only; faster but less informtion to work with, default false
     #                   #invalidates any condition relying on extended author information
     def initialize_options(options)
-      @@whitelisted_options.keys.each do |o|
-        define_method(o) { return @current_options[o] rescue nil}
-      end
       @current_options = {}
       @@whitelisted_options.each {|k, v| @current_options[k] = options[k] || v}
       @current_options

@@ -30,7 +30,7 @@ module Modbot #ModbotAgent
 
     attr_accessor :moderator, :subreddits, :conditions, :current_options
     attr_reader :internet_agent, :m_modrname, :m_password
-    attr_reader :timestamp_offset, :destructive, :minimal_author
+    #attr_reader :timestamp_offset, :destructive, :minimal_author
 
     QUEUES = [:report, :spam, :submission]
     #WHITELISTED_OPTIONS = [:timestamp_offset, :destructive, :minimal_author]

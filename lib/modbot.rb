@@ -83,7 +83,7 @@ module Modbot #ModbotAgent
     #process subreddits on intialize
     def initialize_subreddits(what_subreddits)
       z = []
-      @timestamp_offset ? time = (Time.now.to_f - @timestamp_offset) : time = Time.now.to_f
+      timestamp_offset ? time = (Time.now.to_f - timestamp_offset) : time = Time.now.to_f
       what_subreddits.each do |x|
         h = Hashie::Mash.new
         h.name, h.report_threshold, h.spam_threshold, h.submission_threshold, h.item_limit = x[0], x[1], x[2], x[3], x[4]

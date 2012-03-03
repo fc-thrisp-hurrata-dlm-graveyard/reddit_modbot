@@ -107,9 +107,9 @@ module RedditWrap
           h.timestamp = yy['data']['created']
           h.id = yy['data']['id']
           h.fullid = yy['data']['name']
-          h.permalink = reddit_route(yy['data']['permalink'])
-          #@minimal_author  ?  h.author = yy['data']['author'] : reddit_user(yy['data']['author'])
-          h.author = reddit_user(yy['data']['author'])
+          h.permalink = provide_link(yy)#reddit_route(yy['data']['permalink'])
+          self.minimal_author ? h.author = yy['data']['author'] : reddit_user(yy['data']['author'])
+          #h.author = reddit_user(yy['data']['author'])
           if yy['kind'] == "t1"
             h.kind = "comment"
             h.comment = yy['data']['body']
@@ -129,6 +129,21 @@ module RedditWrap
     rescue #Errno::ETIMEDOUT, Timeout::Error, Net::HTTPNotFound
       @l.info "problem with route #{route}"
     end
+  end
+
+  # provides a direct link for the item for eventual response, repsond to comment
+  # or comment on a link submission
+  def provide_link(from_what)
+    if from_what['kind'] == "t1"
+     x = @internet_agent.get reddit_route("/by_id/#{from_what['parent_id']}.json")
+     y = JSON.parse(x.body)['data']['children']
+     link = "#{y[0]['data']['url']}/#{from_what['id']}"
+    elsif from_what['kind'] == "t3"
+     link = from_what['url'] 
+    else
+      link = "#{REDDIT_ROOT}/unknown"
+    end
+    link
   end
 
   def user_age(from_when)

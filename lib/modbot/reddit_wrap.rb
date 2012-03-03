@@ -107,7 +107,7 @@ module RedditWrap
           h.timestamp = yy['data']['created']
           h.id = yy['data']['id']
           h.fullid = yy['data']['name']
-          h.permalink = provide_link(yy)#reddit_route(yy['data']['permalink'])
+          h.item_link = provide_link(yy)#reddit_route(yy['data']['permalink'])
           #self.minimal_author ? h.author = yy['data']['author'] : reddit_user(yy['data']['author'])
           h.author = reddit_user(yy['data']['author'])
           if yy['kind'] == "t1"
@@ -135,11 +135,11 @@ module RedditWrap
   # or comment on a link submission
   def provide_link(from_what)
     if from_what['kind'] == "t1"
-     x = @internet_agent.get reddit_route("/by_id/#{from_what['parent_id']}.json")
+     x = @internet_agent.get reddit_route("/by_id/#{from_what['data']['parent_id']}.json")
      y = JSON.parse(x.body)['data']['children']
-     link = "#{y[0]['data']['url']}/#{from_what['id']}"
+     link = "#{y['data']['url']}/#{from_what['id']}"
     elsif from_what['kind'] == "t3"
-     link = from_what['url'] 
+     link = from_what['data']['url'] 
     else
       link = "#{REDDIT_ROOT}/unknown"
     end

@@ -135,9 +135,13 @@ module RedditWrap
   # or comment on a link submission
   def provide_link(from_what)
     if from_what['kind'] == "t1"
-     x = @internet_agent.get reddit_route("/by_id/#{from_what['data']['parent_id']}.json")
-     y = JSON.parse(x.body)['data']['children']
-     link = "#{y.first['data']['url']}#{from_what['data']['id']}"
+     begin
+       x = @internet_agent.get reddit_route("/by_id/#{from_what['data']['link_id']}.json")
+       y = JSON.parse(x.body)['data']['children']
+       link = "#{y.first['data']['url']}#{from_what['data']['id']}"
+     rescue
+        @l.info "link to parent submission #{from_what['data']['parent_id']} for comment #{}  unavailable at this time"
+     end
     elsif from_what['kind'] == "t3"
      link = from_what['data']['url'] 
     else

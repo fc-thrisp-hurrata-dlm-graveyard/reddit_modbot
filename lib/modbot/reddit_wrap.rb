@@ -137,7 +137,7 @@ module RedditWrap
     if from_what['kind'] == "t1"
      x = @internet_agent.get reddit_route("/by_id/#{from_what['data']['parent_id']}.json")
      y = JSON.parse(x.body)['data']['children']
-     link = "#{y['data']['url']}/#{from_what['id']}"
+     link = "#{y.first['data']['url']}#{from_what['data']['id']}"
     elsif from_what['kind'] == "t3"
      link = from_what['data']['url'] 
     else

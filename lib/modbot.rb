@@ -122,8 +122,7 @@ module Modbot #ModbotAgent
 
     def cull_invalid(what_conditions)
       remove = ["combined_karma", "link_karma", "comment_karma", "account_age"]
-      what_conditions.each {|x| x.clear unless (x & remove).empty? }
-      what_conditions.reject { |x| x.empty? }
+      what_conditions.each {|x| x.clear unless (x & remove).empty? }.reject { |x| x.empty? }
       what_conditions
     end
 

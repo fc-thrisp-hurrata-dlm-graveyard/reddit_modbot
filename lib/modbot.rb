@@ -97,10 +97,10 @@ module Modbot #ModbotAgent
 
     #process conditions on intialize
     def initialize_conditions(what_conditions)
-      @minimal_author ? what_conditions = cull_invalid(what_conditions) : what_conditions = what_conditions
+      @minimal_author ? conditions_required_here = cull_invalid(what_conditions) : conditions_required_here = what_conditions
       #what_conditions = cull_invalid(what_conditions) if @minimal_author
       z = []
-      what_conditions.each do |x|
+      conditions_required_here.each do |x|
         h = Hashie::Mash.new
         h.subject, h.attribute, h.query, h.action = x[0].to_sym, x[1].to_sym, x[2].to_sym, x[4].to_sym
         h.weight = x[5].to_f || 1.to_f

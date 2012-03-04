@@ -97,7 +97,7 @@ module Modbot #ModbotAgent
 
     #process conditions on intialize
     def initialize_conditions(what_conditions)
-      @minimal_author ? conditions_required_here = cull_invalid(what_conditions) : conditions_required_here = what_conditions
+      self.minimal_author ? conditions_required_here = cull_invalid(what_conditions) : conditions_required_here = what_conditions
       #what_conditions = cull_invalid(what_conditions) if @minimal_author
       z = []
       conditions_required_here.each do |x|

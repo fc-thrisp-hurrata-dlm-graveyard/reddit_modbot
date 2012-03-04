@@ -140,7 +140,7 @@ module RedditWrap
        y = JSON.parse(x.body)['data']['children']
        link = "#{y.first['data']['url']}#{from_what['data']['id']}"
      rescue
-        @l.info "link to parent submission #{from_what['data']['parent_id']} for comment #{}  unavailable at this time"
+        @l.info "link #{from_what['data']['link_id']} unavailable at this time"
      end
     elsif from_what['kind'] == "t3"
      link = from_what['data']['url'] 

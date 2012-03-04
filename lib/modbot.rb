@@ -97,7 +97,8 @@ module Modbot #ModbotAgent
 
     #process conditions on intialize
     def initialize_conditions(what_conditions)
-      what_conditions = cull_invalid(what_conditions) if @minimal_author
+      @minimal_author ? what_conditions = cull_invalid(what_conditions) : what_conditions = what_conditions
+      #what_conditions = cull_invalid(what_conditions) if @minimal_author
       z = []
       what_conditions.each do |x|
         h = Hashie::Mash.new
@@ -120,10 +121,10 @@ module Modbot #ModbotAgent
       z
     end
 
-    def cull_invalid(what_conditions)
+    def cull_invalid(what)
       remove = ["combined_karma", "link_karma", "comment_karma", "account_age"]
-      what_conditions.each {|x| x.clear unless (x & remove).empty? }.reject { |x| x.empty? }
-      what_conditions
+      what.each {|x| x.clear unless (x & remove).empty? }.reject { |x| x.empty? }
+      what
     end
 
     @@whitelisted_options= {timestamp_offset:0, destructive:false, minimal_author:false}

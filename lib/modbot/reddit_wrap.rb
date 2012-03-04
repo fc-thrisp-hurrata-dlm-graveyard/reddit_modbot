@@ -11,7 +11,7 @@ module RedditWrap
   #http://www.reddit.com/user/#{USER_NAME}/about/.json
   def get_current_user(user)
     h = Hashie::Mash.new
-    x = @internet_agent.get "http://www.reddit.com/user/#{user}/about/.json"
+    x = @internet_agent.get reddit_route("/user/#{user}/about/.json")
     x = JSON.parse(x.body)
     h.user_name = x['data']['name']
     h.uh = x['data']['modhash']
@@ -32,25 +32,28 @@ module RedditWrap
 
   #http://www.reddit.com/r/#{SUBREDDIT}/new.json
   def get_reddit_submissions(reddit_name, limit = 300)
-    route = "http://www.reddit.com/r/#{reddit_name}/new.json"
-    q_parse(route, limit)
+    #route = "http://www.reddit.com/r/#{reddit_name}/new.json"
+    #q_parse(route, limit)
+    q_parse(reddit_route("/r/#{reddit_name}/new/.json"), limit)
   end
 
   #http://www.reddit.com/r/#{SUBREDDIT}/about/reports/.json
   def get_reddit_reports(reddit_name, limit = 100)
-    route = "http://www.reddit.com/r/#{reddit_name}/about/reports/.json"
-    q_parse(route, limit)
+    #route = "http://www.reddit.com/r/#{reddit_name}/about/reports/.json"
+    #q_parse(route, limit)
+    q_parse(reddit_route("/r/#{reddit_name}/about/reports/.json"), limit)
   end
 
   #http://www.reddit.com/r/#{SUBREDDIT}/about/spam/.json
   def get_reddit_spams(reddit_name, limit = 300)
-    route = "http://www.reddit.com/r/#{reddit_name}/about/spam/.json"
-    q_parse(route, limit)
+    #route = "http://www.reddit.com/r/#{reddit_name}/about/spam/.json"
+    #q_parse(route, limit)
+    q_parse(reddit_route("/r/#{reddit_name}/about/spam/.json"), limit)
   end
 
   #http://www.reddit.com/api/compose/.json
   def send_reddit_message(user, subject, text)
-    @internet_agent.post 'http://www.reddit.com/api/compose', 
+    @internet_agent.post reddit_route('/api/compose'), 
             'to'=> user,
             'subject'=> subject,
             'text'=> text, 
@@ -61,7 +64,7 @@ module RedditWrap
   #http://www.reddit.com/user/#{USER_NAME}/about/.json# users other than the current mod
   def reddit_user(name)
     begin
-      x = @internet_agent.get "http://www.reddit.com/user/#{name}/about.json"
+      x = @internet_agent.get reddit_route("/user/#{name}/about.json")
       x = JSON.parse(x.body)
       y = Hashie::Mash.new
       y.name, y.created, y.link_karma, y.comment_karma = x['data']['name'], x['data']['created'], x['data']['link_karma'], x['data']['comment_karma']
@@ -78,7 +81,7 @@ module RedditWrap
 
   #http://www.reddit.com/api/approve/.json
   def approve(id)
-    @internet_agent.post 'http://www.reddit.com/api/approve', 
+    @internet_agent.post reddit_route('/api/approve'), 
             'id' => id , 
             'uh' => @uh,
             'api_type' => 'json'
@@ -86,7 +89,7 @@ module RedditWrap
 
   #http://www.reddit.com/remove/.json
   def remove(id)
-    @internet_agent.post 'http://www.reddit.com/api/remove', 
+    @internet_agent.post reddit_route('/api/remove'), 
             'id' => id , 
             'uh' => @uh,
             'api_type' => 'json'
@@ -108,7 +111,7 @@ module RedditWrap
           h.id = yy['data']['id']
           h.fullid = yy['data']['name']
           h.item_link = provide_link(yy)#reddit_route(yy['data']['permalink'])
-          #self.minimal_author ? h.author = yy['data']['author'] : reddit_user(yy['data']['author'])
+          self.minimal_author ? h.author = yy['data']['author'] : reddit_user(yy['data']['author'])
           h.author = reddit_user(yy['data']['author'])
           if yy['kind'] == "t1"
             h.kind = "comment"

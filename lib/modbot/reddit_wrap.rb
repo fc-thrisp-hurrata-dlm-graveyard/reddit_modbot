@@ -8,7 +8,7 @@ module RedditWrap
     "#{REDDIT_ROOT}#{fragment}"
   end
 
-  #http://www.reddit.com/user/#{USER_NAME}/about/.json
+  # http://www.reddit.com/user/#{USER_NAME}/about/.json
   def get_current_user(user)
     h = Hashie::Mash.new
     x = @internet_agent.get reddit_route("/user/#{user}/about/.json")
@@ -18,7 +18,7 @@ module RedditWrap
     h 
   end
 
-  #https://ssl.reddit.com/api/login/
+  # https://ssl.reddit.com/api/login/
   def login(user,password)
     begin
       @internet_agent.post "https://ssl.reddit.com/api/login/#{user}", 
@@ -30,28 +30,28 @@ module RedditWrap
     end
   end
 
-  #http://www.reddit.com/r/#{SUBREDDIT}/new.json
+  # http://www.reddit.com/r/#{SUBREDDIT}/new.json
   def get_reddit_submissions(reddit_name, limit = 300)
     #route = "http://www.reddit.com/r/#{reddit_name}/new.json"
     #q_parse(route, limit)
     q_parse(reddit_route("/r/#{reddit_name}/new/.json"), limit)
   end
 
-  #http://www.reddit.com/r/#{SUBREDDIT}/about/reports/.json
+  # http://www.reddit.com/r/#{SUBREDDIT}/about/reports/.json
   def get_reddit_reports(reddit_name, limit = 100)
     #route = "http://www.reddit.com/r/#{reddit_name}/about/reports/.json"
     #q_parse(route, limit)
     q_parse(reddit_route("/r/#{reddit_name}/about/reports/.json"), limit)
   end
 
-  #http://www.reddit.com/r/#{SUBREDDIT}/about/spam/.json
+  # http://www.reddit.com/r/#{SUBREDDIT}/about/spam/.json
   def get_reddit_spams(reddit_name, limit = 300)
     #route = "http://www.reddit.com/r/#{reddit_name}/about/spam/.json"
     #q_parse(route, limit)
     q_parse(reddit_route("/r/#{reddit_name}/about/spam/.json"), limit)
   end
 
-  #http://www.reddit.com/api/compose/.json
+  # http://www.reddit.com/api/compose/.json
   def send_reddit_message(user, subject, text)
     @internet_agent.post reddit_route('/api/compose'), 
             'to'=> user,
@@ -61,7 +61,7 @@ module RedditWrap
             'api_type' => 'json'
   end
 
-  #http://www.reddit.com/user/#{USER_NAME}/about/.json# users other than the current mod
+  # http://www.reddit.com/user/#{USER_NAME}/about/.json# users other than the current mod
   def reddit_user(name)
     begin
       x = @internet_agent.get reddit_route("/user/#{name}/about.json")
@@ -79,7 +79,7 @@ module RedditWrap
     end 
   end
 
-  #http://www.reddit.com/api/approve/.json
+  # http://www.reddit.com/api/approve/.json
   def approve(id)
     @internet_agent.post reddit_route('/api/approve'), 
             'id' => id , 
@@ -87,7 +87,7 @@ module RedditWrap
             'api_type' => 'json'
   end
 
-  #http://www.reddit.com/remove/.json
+  # http://www.reddit.com/remove/.json
   def remove(id)
     @internet_agent.post reddit_route('/api/remove'), 
             'id' => id , 
@@ -95,7 +95,8 @@ module RedditWrap
             'api_type' => 'json'
   end
 
-  #misc utility methods
+  # misc utility methods
+  # general fetch and parse of admin queues (report, spam, new)
   def q_parse(route, limit)
     begin 
       x = @internet_agent.get route, 'limit' => limit
@@ -134,8 +135,7 @@ module RedditWrap
     end
   end
 
-  # provides a direct link for the item for eventual response, repsond to comment
-  # or comment on a link submission
+  # provides a direct link for the item for eventual response to comment or link submission
   def provide_link(from_what)
     if from_what['kind'] == "t1"
      begin
@@ -153,6 +153,7 @@ module RedditWrap
     link
   end
 
+  # returns a usable value for user age 
   def user_age(from_when)
     (((( ( Time.at(Time.now) - Time.at(from_when) )/ 60 )/ 60)/ 24).to_i)
   end

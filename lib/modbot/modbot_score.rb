@@ -13,7 +13,7 @@ module ModbotScore
       item.score = score_verdict(item.verdict, :approve) / score_verdict(item.verdict, :remove)
       final = formatted_item_verdict(item.verdict)
       if final.count > 0
-        @l.info "#{final} yields a score of #{item.score} for item #{item.fullid}"
+        @l.info "#{final} yields a score of #{item.score} for item #{item.fullid} at #{item.item_link}"
       end
     end
   end

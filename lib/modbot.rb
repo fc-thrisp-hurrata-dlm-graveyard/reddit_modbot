@@ -74,13 +74,13 @@ module Modbot #ModbotAgent
       @subreddits.each.collect(&:name)
     end   
 
-    #intialize an agent to handle the internet
+    # intialize an agent to handle the internet to and fro
     def initialize_internet_agent 
       @internet_agent = Mechanize.new{ |agent| agent.user_agent_alias = 'Mac Safari' }
       @internet_agent.history_added = Proc.new {sleep 3}
     end
 
-    #process subreddits on intialize
+    # process subreddits into useful hashie/mash on intialize
     def initialize_subreddits(what_subreddits)
       z = []
       time = Time.now.to_f - self.timestamp_offset
@@ -95,10 +95,10 @@ module Modbot #ModbotAgent
       z
     end
 
-    #process conditions on intialize
+    # process conditions into useful hashie/mash on intialize
     def initialize_conditions(what_conditions)
-      self.minimal_author ? conditions_required_here = cull_invalid(what_conditions) : conditions_required_here = what_conditions
-      #what_conditions = cull_invalid(what_conditions) if @minimal_author
+      #self.minimal_author ? conditions_required_here = cull_invalid(what_conditions) : conditions_required_here = what_conditions
+      what_conditions = cull_invalid(what_conditions) if self.minimal_author
       z = []
       conditions_required_here.each do |x|
         h = Hashie::Mash.new
@@ -121,6 +121,7 @@ module Modbot #ModbotAgent
       z
     end
 
+    # remove all conflicting conditions when minimal_author is true
     def cull_invalid(what)
       remove = ["combined_karma", "link_karma", "comment_karma", "account_age"]
       what = what.reject {|x| x unless (x & remove).empty? }
@@ -181,7 +182,7 @@ module Modbot #ModbotAgent
       end
     end
 
-    #score the cu;rrent by q 
+    #score the current by q 
     def score(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
         queues.each { |x| score_results(s["#{x}_recent"]) }
@@ -197,9 +198,9 @@ module Modbot #ModbotAgent
 
     def manage_subreddits
       fetch
-      check #some sort of cascading proceed condition if fetch yields nothing 
-      score#
-      process if @destructive#true       
+      check 
+      score
+      process if self.destructive       
     end
 
   end

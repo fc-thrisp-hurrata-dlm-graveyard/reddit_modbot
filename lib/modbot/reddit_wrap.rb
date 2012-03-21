@@ -67,9 +67,10 @@ module RedditWrap
       x = @internet_agent.get reddit_route("/user/#{name}/about.json")
       x = JSON.parse(x.body)
       y = Hashie::Mash.new
-      y.name, y.created, y.link_karma, y.comment_karma = x['data']['name'], x['data']['created'], x['data']['link_karma'], x['data']['comment_karma']
-      y.user_age = user_age( x['data']['created'] )
-      y.karma_ratio = (x['data']['link_karma'].to_f / x['data']['comment_karma'].to_f).round(3)
+      y.author, y.author_created, y.author_link_karma, y.author_comment_karma = x['data']['name'], x['data']['created'], x['data']['link_karma'], x['data']['comment_karma']
+      y.author_age = user_age( x['data']['created'] )
+      y.author_combined_karma(x['data']['link_karma'].to_f + x['data']['comment_karma'].to_f)
+      y.author_karma_ratio = (x['data']['link_karma'].to_f / x['data']['comment_karma'].to_f).round(3)
       y
     rescue
       @l.info "problem with getting user #{name} information"
@@ -114,7 +115,7 @@ module RedditWrap
           h.id = yy['data']['id']
           h.fullid = yy['data']['name']
           h.item_link = provide_link(yy)#reddit_route(yy['data']['permalink'])
-          self.minimal_author ? h.author = yy['data']['author'] : h.author = reddit_user(yy['data']['author'])
+          self.minimal_author ? h.author = yy['data']['author'] : h.merge(reddit_user(yy['data']['author']))
           #h.author = reddit_user(yy['data']['author'])
           if yy['kind'] == "t1"
             h.kind = "comment"

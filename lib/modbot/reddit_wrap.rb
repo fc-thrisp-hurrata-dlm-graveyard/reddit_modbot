@@ -129,6 +129,11 @@ module RedditWrap
           else
             h.kind = "wtf, something not a link or comment" 
           end
+          h
+          if h.author_mash#unable to merge this above
+            h = h.merge(h.author_mash) 
+            h.delete('author_mash')
+          end
           z << h
         end
       end

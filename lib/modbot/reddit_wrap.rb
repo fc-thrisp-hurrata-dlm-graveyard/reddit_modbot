@@ -67,15 +67,15 @@ module RedditWrap
       x = @internet_agent.get reddit_route("/user/#{name}/about.json")
       x = JSON.parse(x.body)
       y = Hashie::Mash.new
-      y.author, y.author_created, y.author_link_karma, y.author_comment_karma = x['data']['name'], x['data']['created'], x['data']['link_karma'], x['data']['comment_karma']
-      y.author_age = user_age( x['data']['created'] )
-      y.author_combined_karma(x['data']['link_karma'].to_f + x['data']['comment_karma'].to_f)
+      y.author, y.author_created, y.author_age = x['data']['name'], x['data']['created'], user_age( x['data']['created'] )
+      y.author_link_karma, y.author_comment_karma = x['data']['link_karma'], x['data']['comment_karma']
+      y.author_combined_karma = ( (x['data']['link_karma'].to_f) + (x['data']['comment_karma'].to_f) )
       y.author_karma_ratio = (x['data']['link_karma'].to_f / x['data']['comment_karma'].to_f).round(3)
       y
     rescue
       @l.info "problem with getting user #{name} information"
       y = Hashie::Mash.new
-      y.name, y.created, y.link_karma, y.comment_karma, y.user_age, y.karma_ratio = name, Time.now.to_f, 0, 0, 0, 0
+      y.author, y.author_created, y.author_link_karma, y.author_comment_karma, y.author_age, y.author_karma_ratio = name, Time.now.to_f, 0, 0, 0, 0
       y
     end 
   end

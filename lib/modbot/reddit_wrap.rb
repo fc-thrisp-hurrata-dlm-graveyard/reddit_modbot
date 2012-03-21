@@ -114,7 +114,7 @@ module RedditWrap
           h.id = yy['data']['id']
           h.fullid = yy['data']['name']
           h.item_link = provide_link(yy)#reddit_route(yy['data']['permalink'])
-          self.minimal_author ? h.author = yy['data']['author'] : reddit_user(yy['data']['author'])
+          self.minimal_author ? h.author = yy['data']['author'] : h.author = reddit_user(yy['data']['author'])
           #h.author = reddit_user(yy['data']['author'])
           if yy['kind'] == "t1"
             h.kind = "comment"

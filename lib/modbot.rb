@@ -121,7 +121,7 @@ module Modbot #ModbotAgent
 
     # remove all conflicting conditions when minimal_author is true
     def cull_invalid(what)
-      remove = ["combined_karma", "link_karma", "comment_karma", "account_age"]
+      remove = ["author_combined_karma", "author_link_karma", "author_comment_karma", "author_karma_ratio", "author_account_age"]
       what = what.reject {|x| x unless (x & remove).empty? }
       what
     end

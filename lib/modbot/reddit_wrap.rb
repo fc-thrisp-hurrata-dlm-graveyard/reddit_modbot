@@ -126,6 +126,7 @@ module RedditWrap
             h.is_self = yy['data']['is_self']
             h.selftext = yy['data']['selftext']
             h.url = yy['data']['url']
+            h.domain = URI(yy['data']['url']).host
           else
             h.kind = "wtf, something not a link or comment" 
           end

@@ -1,6 +1,6 @@
 module ModbotFetch
 
-  #main method to manage recent q items in spam, report, submissions
+  #get recent queue items from spam, report, new submissions after comparing timestamps for new items
   def fetch_recent(which_q, subreddit)
     which_to = self.method("get_reddit_#{which_q}s")
     time_recent = get_time_recent(which_q, subreddit, which_to)
@@ -27,7 +27,7 @@ module ModbotFetch
     subreddit_last <= time_recent
   end
 
-  #go to reddit for results
+  #go to reddit for results, return results
   def fetch_results(which_q, subreddit, which_to)
     results = which_to.call(subreddit.name, subreddit.item_limit)
     @l.info "results fetched from #{subreddit.name}::#{which_q}"
@@ -35,7 +35,7 @@ module ModbotFetch
     results
   end
 
-  #filter for only items newer than last check
+  #filter out old items
   def filterby_timestamp(which_q, subreddit, results)
     if results.first.nil? || results.empty?#obvious screwy logic is screwy, but I'll get it later :/
       results = results
@@ -49,7 +49,7 @@ module ModbotFetch
     end
   end
 
-  #store results in variable for checking
+  #store results for use
   def store_results(subreddit, which_q, results)
     if results.empty?
       subreddit["#{which_q}_recent"] = []

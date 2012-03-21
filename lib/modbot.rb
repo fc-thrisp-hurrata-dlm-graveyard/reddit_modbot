@@ -84,7 +84,6 @@ module Modbot #ModbotAgent
     def initialize_subreddits(what_subreddits)
       z = []
       time = Time.now.to_f - self.timestamp_offset
-      #timestamp_offset ? time = (Time.now.to_f - timestamp_offset) : time = Time.now.to_f
       what_subreddits.each do |x|
         h = Hashie::Mash.new
         h.name, h.report_threshold, h.spam_threshold, h.submission_threshold, h.item_limit = x[0], x[1], x[2], x[3], x[4]
@@ -97,7 +96,6 @@ module Modbot #ModbotAgent
 
     # process conditions into useful hashie/mash on intialize
     def initialize_conditions(what_conditions)
-      #self.minimal_author ? conditions_required_here = cull_invalid(what_conditions) : conditions_required_here = what_conditions
       what_conditions = cull_invalid(what_conditions) if self.minimal_author
       z = []
       what_conditions.each do |x|

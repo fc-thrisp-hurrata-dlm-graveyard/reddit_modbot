@@ -95,6 +95,8 @@ module RedditWrap
             'api_type' => 'json'
   end
 
+  # handle bans?
+
   # misc utility methods
   # general fetch and parse of admin queues (report, spam, new)
   def q_parse(route, limit)
@@ -113,7 +115,7 @@ module RedditWrap
           h.fullid = yy['data']['name']
           h.item_link = provide_link(yy)#reddit_route(yy['data']['permalink'])
           self.minimal_author ? h.author = yy['data']['author'] : reddit_user(yy['data']['author'])
-          h.author = reddit_user(yy['data']['author'])
+          #h.author = reddit_user(yy['data']['author'])
           if yy['kind'] == "t1"
             h.kind = "comment"
             h.comment = yy['data']['body']

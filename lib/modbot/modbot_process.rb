@@ -1,5 +1,6 @@
 module ModbotProcess
 
+  # Analyze a result's score in a result set
   def analyze_score(item)
     case item.score
     when item.score.infinite?
@@ -9,9 +10,10 @@ module ModbotProcess
     else
       item.score >= 1 ? action = :approve : action = :remove
     end
-    return action
+    #return action
   end
-       
+
+  # Perform an action on reddit       
   def perform_action(action, item)
     case action
     when :inconclusive
@@ -29,6 +31,7 @@ module ModbotProcess
     end
   end
 
+  # Analyze fetched, checked, and scored results set and take action (approve, remove, alert) where necessary
   def process_results(results_set)
     #check_alerts("#{which_q}_threshold".to_sym, results.count, subreddit)
     results_set.each do |item|

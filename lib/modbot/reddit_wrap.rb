@@ -115,7 +115,6 @@ module RedditWrap
           h.id = yy['data']['id']
           h.fullid = yy['data']['name']
           h.item_link = provide_link(yy)#reddit_route(yy['data']['permalink'])
-          h.author = yy['data']['author'] if self.minimal_author
           if yy['kind'] == "t1"
             h.kind = "comment"
             h.comment = yy['data']['body']
@@ -128,7 +127,11 @@ module RedditWrap
           else
             h.kind = "wtf, something not a link or comment" 
           end
-          h.merge(reddit_user(yy['data']['author']))
+          if self.minimal_author
+            h.author = yy['data']['author']
+          else 
+            h.merge(reddit_user(yy['data']['author']))
+          end
           z << h
         end
       end

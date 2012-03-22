@@ -97,8 +97,8 @@ module RedditWrap
   end
 
   # handle bans?
-  def ban(id)
-  end
+  #def ban(id)
+  #end
 
   # misc utility methods
   # general fetch and parse of admin queues (report, spam, new)
@@ -141,13 +141,17 @@ module RedditWrap
   end
 
   def get_author_info(h)
-    if self.minimal_author
-      h.author = yy['data']['author']
-    else
-      author_info = reddit_user(yy['data']['author'])
-      h = h.merge(author_info)
+    begin
+      if self.minimal_author
+        h.author = yy['data']['author']
+      else
+        author_info = reddit_user(yy['data']['author'])
+        h = h.merge(author_info)
+      end
+      h
+    rescue
+       @l.info "problem with fixing/inserting author info"
     end
-    h 
   end
 
   # provides a direct link for the item for eventual response to comment or link submission

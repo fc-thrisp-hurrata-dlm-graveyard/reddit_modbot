@@ -25,9 +25,10 @@ module Modbot #ModbotAgent
     include ModbotCheck
     include ModbotScore
     include ModbotProcess
+    #include ModbotBan
     include ModbotAlerts
     include ModbotUtilities
-
+ 
     attr_accessor :moderator, :subreddits, :conditions
     attr_reader :internet_agent, :m_modrname, :m_password, :current_options
 

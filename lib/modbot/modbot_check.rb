@@ -29,7 +29,7 @@ module ModbotCheck
   # thoughts on item not used, required to pass through this method? --> create a hash to pass around as one blob
   def test_condition(condition, item, test_item)
     test = query_test_condition(condition, test_item)
-    deliver_test_outcome(test, item, test_item)
+    deliver_test_outcome(test, condition, item, test_item)
   end
      
   # tests an item against a condition, returns true or false
@@ -45,7 +45,7 @@ module ModbotCheck
   end
 
   # deliver test outcome
-  def deliver_test_outcome(test, item, test_item)
+  def deliver_test_outcome(test, condition, item, test_item)
     if test.kind_of?(Integer) || test == true
       item.verdict.unshift([condition.action, condition.weight])
       test_result = true

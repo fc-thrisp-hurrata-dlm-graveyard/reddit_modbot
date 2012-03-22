@@ -97,6 +97,8 @@ module RedditWrap
   end
 
   # handle bans?
+  def ban(id)
+  end
 
   # misc utility methods
   # general fetch and parse of admin queues (report, spam, new)
@@ -114,9 +116,7 @@ module RedditWrap
           h.timestamp = yy['data']['created']
           h.id = yy['data']['id']
           h.fullid = yy['data']['name']
-          h.item_link = provide_link(yy)#reddit_route(yy['data']['permalink'])
-          #self.minimal_author ? h.author = yy['data']['author'] : h.merge(reddit_user(yy['data']['author']))
-          self.minimal_author ? h.author = yy['data']['author'] : h.author_mash = reddit_user(yy['data']['author'])
+          h.item_link = provide_link(yy)
           if yy['kind'] == "t1"
             h.kind = "comment"
             h.comment = yy['data']['body']
@@ -130,11 +130,7 @@ module RedditWrap
           else
             h.kind = "wtf, something not a link or comment" 
           end
-          h
-          if h.author_mash#unable to merge this above
-            h = h.merge(h.author_mash) 
-            h.delete('author_mash')
-          end
+          h = get_author_info(h)
           z << h
         end
       end
@@ -142,6 +138,16 @@ module RedditWrap
     rescue #Errno::ETIMEDOUT, Timeout::Error, Net::HTTPNotFound
       @l.info "problem with route #{route}"
     end
+  end
+
+  def get_author_info(h)
+    if self.minimal_author
+      h.author = yy['data']['author']
+    else
+      author_info = reddit_user(yy['data']['author'])
+      h = h.merge(author_info)
+    end
+    h 
   end
 
   # provides a direct link for the item for eventual response to comment or link submission

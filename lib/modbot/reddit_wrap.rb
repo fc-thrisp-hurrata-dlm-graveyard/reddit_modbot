@@ -130,7 +130,7 @@ module RedditWrap
           else
             h.kind = "wtf, something not a link or comment" 
           end
-          h = get_author_info(h)
+          h = get_author_info(yy, h)
           z << h
         end
       end
@@ -140,13 +140,14 @@ module RedditWrap
     end
   end
 
-  def get_author_info(h)
+  def get_author_info(reddit_info, hash)
     begin
       if self.minimal_author
-        h.author = yy['data']['author']
+        hash.author = reddit_info['data']['author']
+        h = hash
       else
-        author_info = reddit_user(yy['data']['author'])
-        h = h.merge(author_info)
+        author_info = reddit_user(reddit_info['data']['author'])
+        h = hash.merge(author_info)
       end
       h
     rescue

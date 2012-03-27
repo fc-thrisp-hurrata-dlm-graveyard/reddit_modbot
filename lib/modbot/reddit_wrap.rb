@@ -32,23 +32,23 @@ module RedditWrap
 
   # http://www.reddit.com/r/#{SUBREDDIT}/new.json
   def get_reddit_submissions(reddit_name, limit = 300)
-    #route = "http://www.reddit.com/r/#{reddit_name}/new.json"
-    #q_parse(route, limit)
     q_parse(reddit_route("/r/#{reddit_name}/new/.json"), limit)
   end
 
   # http://www.reddit.com/r/#{SUBREDDIT}/about/reports/.json
   def get_reddit_reports(reddit_name, limit = 100)
-    #route = "http://www.reddit.com/r/#{reddit_name}/about/reports/.json"
-    #q_parse(route, limit)
     q_parse(reddit_route("/r/#{reddit_name}/about/reports/.json"), limit)
   end
 
   # http://www.reddit.com/r/#{SUBREDDIT}/about/spam/.json
   def get_reddit_spams(reddit_name, limit = 300)
-    #route = "http://www.reddit.com/r/#{reddit_name}/about/spam/.json"
-    #q_parse(route, limit)
     q_parse(reddit_route("/r/#{reddit_name}/about/spam/.json"), limit)
+  end
+
+  def get_reddit_bans(reddit_name)
+    x = @internet_agent.get reddit_route("/r/#{reddit_name}/about/banned/.json")
+    y = JSON.parse(x.body)['data']['children']
+    y
   end
 
   # http://www.reddit.com/api/compose/.json
@@ -95,10 +95,6 @@ module RedditWrap
             'uh' => @uh,
             'api_type' => 'json'
   end
-
-  # handle bans?
-  #def ban(id)
-  #end
 
   # misc utility methods
   # general fetch and parse of admin queues (report, spam, new)
@@ -151,22 +147,22 @@ module RedditWrap
       end
       h
     rescue
-       @l.info "problem with fixing/inserting author info"
+      @l.info "problem with fixing/inserting author info"
     end
   end
 
   # provides a direct link for the item for eventual response to comment or link submission
   def provide_link(from_what)
     if from_what['kind'] == "t1"
-     begin
-       x = @internet_agent.get reddit_route("/by_id/#{from_what['data']['link_id']}.json")
-       y = JSON.parse(x.body)['data']['children']
-       link = "#{y.first['data']['url']}#{from_what['data']['id']}"
-     rescue
+      begin
+        x = @internet_agent.get reddit_route("/by_id/#{from_what['data']['link_id']}.json")
+        y = JSON.parse(x.body)['data']['children']
+        link = "#{y.first['data']['url']}#{from_what['data']['id']}"
+      rescue
         @l.info "link #{from_what['data']['link_id']} unavailable at this time"
-     end
+      end
     elsif from_what['kind'] == "t3"
-     link = from_what['data']['url'] 
+      link = from_what['data']['url'] 
     else
       link = "#{REDDIT_ROOT}/unknown"
     end

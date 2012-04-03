@@ -45,12 +45,6 @@ module RedditWrap
     q_parse(reddit_route("/r/#{reddit_name}/about/spam/.json"), limit)
   end
 
-  def get_reddit_bans(reddit_name)
-    x = @internet_agent.get reddit_route("/r/#{reddit_name}/about/banned/.json")
-    y = JSON.parse(x.body)['data']['children']
-    y
-  end
-
   # http://www.reddit.com/api/compose/.json
   def send_reddit_message(user, subject, text)
     @internet_agent.post reddit_route('/api/compose'), 

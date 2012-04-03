@@ -1,4 +1,3 @@
-#require "modbot/modbot"
 require "modbot/version"
 require "modbot/reddit_wrap"
 require "modbot/modbot_fetch"
@@ -8,9 +7,8 @@ require "modbot/modbot_process"
 require "modbot/modbot_alerts"
 require "modbot/modbot_utilities"
 require "logger"
-require "modbot/result_set"#fold check/score into a class w/enumerable mixin that holds the fetched results and returns values as needed
 
-module Modbot #ModbotAgent
+module Modbot
   class Agent
     include RedditWrap
     include ModbotFetch
@@ -25,8 +23,7 @@ module Modbot #ModbotAgent
     attr_reader :internet_agent, :m_modrname, :m_password, :current_options
 
     QUEUES = [:report, :spam, :submission]
-    MODBOT_ROOT = File.expand_path File.dirname(__FILE__)
-
+ 
     def initialize(config = :pass_arg, moderator = {},
                                        subreddits = [],
                                        conditions = [],
@@ -39,7 +36,7 @@ module Modbot #ModbotAgent
         @subreddits = subreddits
         @conditions = conditions
       elsif config == :pass_config
-        mbc = YAML::load(File.open("modbot.yml")) #how to find root and where should this be or path specification        
+        mbc = YAML::load(File.open("modbot.yml"))        
         @m_modrname, @m_password = mbc['moderator']['name'], mbc['moderator']['pass']
         @subreddits = mbc['subreddits']
         @conditions = mbc['conditions'] 
@@ -72,13 +69,13 @@ module Modbot #ModbotAgent
       @subreddits.each.collect(&:name)
     end   
 
-    # intialize an agent to handle the internet to and fro
+    # Intialize an agent to handle the internet to and fro
     def initialize_internet_agent 
-      @internet_agent = Mechanize.new{ |agent| agent.user_agent_alias = 'Mac Safari' }
+      @internet_agent = Mechanize.new{ |agent| agent.user_agent_alias = 'reddit_modbot' }
       @internet_agent.history_added = Proc.new {sleep 3}
     end
 
-    # process subreddits into useful hashie/mash on intialize
+    # Process subreddits into useful hashie/mash on intialize
     def initialize_subreddits(what_subreddits)
       z = []
       time = Time.now.to_f - self.timestamp_offset
@@ -92,7 +89,7 @@ module Modbot #ModbotAgent
       z
     end
 
-    # process conditions into useful hashie/mash on intialize
+    # Process conditions into useful hashie/mash on intialize
     def initialize_conditions(what_conditions)
       what_conditions = cull_invalid(what_conditions) if self.minimal_author
       z = []
@@ -117,14 +114,15 @@ module Modbot #ModbotAgent
       z
     end
 
-    # remove all conflicting conditions when minimal_author is true
+    # Remove all conflicting conditions when minimal_author is true
     def cull_invalid(what)
       remove = ["author_combined_karma", "author_link_karma", "author_comment_karma", "author_karma_ratio", "author_account_age"]
       what = what.reject {|x| x unless (x & remove).empty? }
       what
     end
 
-    @@whitelisted_options= {timestamp_offset:0, destructive:false, minimal_author:false, shadow:false}
+    # Whitelist options, only allowable options (with their defaults if not specified) can be passed in on intitialization
+    @@whitelisted_options= {timestamp_offset:0, destructive:false, minimal_author:false}
     
     @@whitelisted_options.keys.each do |o|
       define_method(o) { return @current_options[o] rescue nil}
@@ -140,7 +138,6 @@ module Modbot #ModbotAgent
     # destructive      #if true, remove and approve items via reddit api; otherwise fetch, check, and score only
     # minimal_author   #poll reddit for author name only; faster but less informtion to work with, default false
     #                  #invalidates any condition relying on extended author information
-    # shadow           #creates a special condition that is an array of user names, use tbd but allows dynamic shadow bans of a sort
     def initialize_options(options)
       options = options.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
       options[:timestamp_offset] = options[:timestamp_offset]*(60*60*24)
@@ -161,15 +158,15 @@ module Modbot #ModbotAgent
       @uh = get_current_user(m_modrname).uh
     end
 
-    #fetch results for this agent
-    #subreddits must be in an array!
+    # Fetch results for this agent
+    # subreddits must be in an array!
     def fetch(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
         queues.each { |x| fetch_recent(x, s) } unless queues.nil?
       end
     end
  
-    #check the current by q 
+    # Check the current by q 
     def check(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
         queues.each { |x|
@@ -179,20 +176,21 @@ module Modbot #ModbotAgent
       end
     end
 
-    #score the current by q 
+    # Score the current by q 
     def score(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
         queues.each { |x| score_results(s["#{x}_recent"]) }
       end
     end
 
-    #process the current by q
+    # Process the current by q
     def process(subreddits = current_subreddits, queues = QUEUES)
       subreddits.each do |s|
         queues.each { |x| process_results(s["#{x}_recent"]) }
       end
     end
 
+    # Do it all with one command
     def manage_subreddits
       fetch
       check 

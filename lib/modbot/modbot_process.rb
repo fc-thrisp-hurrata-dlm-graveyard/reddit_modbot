@@ -10,7 +10,6 @@ module ModbotProcess
     else
       item.score >= 1 ? action = :approve : action = :remove
     end
-    #return action
   end
 
   # Perform an action on reddit       
@@ -20,10 +19,10 @@ module ModbotProcess
       @l.info "not enough data to approve, remove, or call alert for #{item.fullid}, item not relevant to supplied conditions"
     when :approve
       self.approve(item.fullid)
-      @l.info "approved #{item.fullid}" # improve description 
+      @l.info "approved #{item.fullid}"
     when :remove
       self.remove(item.fullid)
-      @l.info "removed #{item.fullid}" # improve description
+      @l.info "removed #{item.fullid}"
     when :alert
       self.perform_alert(self.m_modrname, :item, "Alert triggered for #{item.kind} #{item.fullid} :: #{item.author} :: #{item.inspect}")
     else
@@ -33,7 +32,7 @@ module ModbotProcess
 
   # Analyze fetched, checked, and scored results set and take action (approve, remove, alert) where necessary
   def process_results(results_set)
-    #check_alerts("#{which_q}_threshold".to_sym, results.count, subreddit)
+    check_alerts("#{which_q}_threshold".to_sym, results.count, subreddit)
     results_set.each do |item|
       track_alerts(item)
       action = analyze_score(item)

@@ -37,7 +37,7 @@ module ModbotFetch
 
   #filter out old items
   def filterby_timestamp(which_q, subreddit, results)
-    if results.first.nil? || results.empty?#obvious screwy logic is screwy, but I'll get it later :/
+    if results.first.nil? || results.empty?#obvious screwy logic is screwy
       results = results
     else
       time_to_filter = subreddit.timestamps["#{which_q}_last"]

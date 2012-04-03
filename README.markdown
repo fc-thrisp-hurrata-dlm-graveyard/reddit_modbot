@@ -7,9 +7,9 @@ Use
 
 2. Generate new instance
 
-    my_agent = Modbot::Agent.new(:pass_config) #from a yaml file (in the root of your directory)
+    m = Modbot::Agent.new(:pass_config) #from a yaml file (in the root of your directory)
 
-    my_agent = Modbot::Agent.new(:pass_arg, moderator = {'name' => '', 'password' => ''},
+    m = Modbot::Agent.new(:pass_arg, moderator = {'name' => '', 'password' => ''},
                                  subreddits = [[], [], []]
                                  conditions = [ [], [], []]) #this is the default
 
@@ -34,11 +34,23 @@ Use
 
 3. Use as needed
 
-    my_agent.manage_subreddits
+    m.manage_subreddits
 
-   This will fetch, check, score, and process items in reports, spam, and new submissions for the subreddits in this instance
+   This will fetch, check, score, and process (if destructive set to true) items in reports, spam, and new submissions for the subreddits in this instance
 
 See code for a breakdown on carrying out specific acts (fetch, check, score, process)
+
+available options
+
+    timestamp_offset      set an initial time in the past for polling queues, else agent will only work from time it first fetches forward
+    
+    destructive           if true, remove and approve items via reddit api; otherwise fetch, check, and score only
+    
+    minimal_author        poll reddit for author name only; faster but less information to work with, default false
+                          agent will invalidate any condition relying on extended author information passed to it if this is true
+    
+    #shadow                creates a special condition that is an array of user names, use tbd but allows dynamic shadow bans of a sort
+
 
 TODO
 ---
@@ -52,8 +64,6 @@ TODO
 - configurable logger, allow specification of logger to hook into by init choice 
 
 - improved notifications for removals --- comment on the item
-
-- find out how to do notifications -- captcha requirements cut that off for the test mod, though the impact will vary
 
 - improved config file intialization
 

@@ -11,7 +11,7 @@ module RedditWrap
   # http://www.reddit.com/user/#{USER_NAME}/about/.json
   def get_current_user(user)
     h = Hashie::Mash.new
-    x = @internet_agent.get reddit_route("/user/#{user}/about/.json")
+    x = @internet_agent.get reddit_route("/u/#{user}/about/.json")
     x = JSON.parse(x.body)
     h.user_name = x['data']['name']
     h.uh = x['data']['modhash']
@@ -64,7 +64,7 @@ module RedditWrap
   # http://www.reddit.com/user/#{USER_NAME}/about/.json# users other than the current mod
   def reddit_user(name)
     begin
-      x = @internet_agent.get reddit_route("/user/#{name}/about.json")
+      x = @internet_agent.get reddit_route("/u/#{name}/about.json")
       x = JSON.parse(x.body)
       y = Hashie::Mash.new
       y.author, y.author_created, y.author_age = x['data']['name'], x['data']['created'], user_age( x['data']['created'] )

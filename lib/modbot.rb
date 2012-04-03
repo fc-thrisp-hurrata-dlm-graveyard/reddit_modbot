@@ -15,7 +15,6 @@ module Modbot
     include ModbotCheck
     include ModbotScore
     include ModbotProcess
-    include ModbotShadow
     include ModbotAlerts
     include ModbotUtilities
  
